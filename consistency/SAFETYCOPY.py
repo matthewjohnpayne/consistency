@@ -19,15 +19,17 @@ Then reconstruct obs80 from fields to demonstrate round-trip
 What would need to be frozen & when ? 
 '''
 
-# ------------------------------------------------------------------------
-# THIRD PARTY IMPORTS
-# ------------------------------------------------------------------------
+# third party imports 
 import sys, os
 import time
+import mpc_psql as psql
+import mpc_convert as mc
 import psycopg2
-import difflib
+import difflib
 import numpy as np 
 from astropy.time import Time
+sys.path.insert(0, '/share/apps/obs80')
+import obs80 as o80
 from collections import defaultdict
 import textwrap 
 import healpy as hp
@@ -36,49 +38,17 @@ import re
 import shutil
 import copy
 
-# ------------------------------------------------------------------------
-# MPC IMPORTS
-# ------------------------------------------------------------------------
-import mpc_psql as psql
-import mpc_convert as mcimport mpc_new_processing_sub_directory as newsub
+# Local imports 
+import mpc_new_processing_sub_directory as newsub
 import status as mpc_status
-sys.path.insert(0, '/share/apps/obs80')
-import obs80 as o80
 
-# ------------------------------------------------------------------------
-# LOCAL IMPORTS
-# ------------------------------------------------------------------------
-import flat_files as ff
 
 # ------------------------------------------------------------------------
 # TOP-LEVEL FUNCTIONS TO HANDLE THE OVERALL RUNNING OF CONSISTENCY CHECKS
 # ------------------------------------------------------------------------
-
-def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
-    '''
-    High level function-call: used to check that flat-file observations are internally consistent
-
-    inputs:
-    -------
-    n0,n1 : integers
-     - first and last+1 "number" (permid) of numbered objects to be checked
-
-    returns:
-    -------
-    nothing at present
-
-    '''
-
-    # Establish one-off connection to the database on mpcdb1
-    # NB Despite being flat-file focused, we might need to
-    # get submission IDs from the database ...
-    host = 'mpcdb1.cfa.harvard.edu'
-    database = 'vmsops'
-    cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
-
-
+                
 def check_consistency(n0,n1, DEBUG = True):
-    ''' High level function-call: used to check consistency of a list of numbered objects
+    ''' Highest level function-call: used to check consistency of a list of numbered objects 
     
     inputs:
     -------
@@ -129,11 +99,7 @@ def check_desig(cnx, desig, DEBUG=False):
     
     # Get obs from flat files 
     # - returns a dict of obs, keyed on obs80_bit
-    obs_ff, probs_ff = ff.get_obs_from_ff(desig, DEBUG=DEBUG)
-    
-    
-    # Identify and fix any problems within the flat-file data
-    
+    obs_ff, probs_ff = get_obs_from_ff(desig, DEBUG=DEBUG)
     if probs_ff:
         print_read_probs_dict(probs_ff, 'FF')
         print()
@@ -211,7 +177,7 @@ def get_obs_from_ff(desig, DEBUG=False):
     
         
     # Find any duplicate lines
-    obs, probs,     = {}, defaultdict(list), []
+    obs, probs, deduped_obs_list= {}, defaultdict(list), []
     for n,line in enumerate(obs_list):
         obs80_bit = line[15:56]
         
@@ -1024,13 +990,6 @@ def Opt(line):
 
     
 if __name__ == "__main__":
-    #check_consistency(int(sys.argv[1]),
-    #                  int(sys.argv[2]),
-    #                  DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False)
-    
-    
-    # (i) Start by checking the internal self-consistency of the flat-files
-    check_flat_file_internal_consistency(   int(sys.argv[1]),
-                                            int(sys.argv[2]),
-                                            DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False )
-    
+    check_consistency(int(sys.argv[1]),
+                      int(sys.argv[2]),
+                      DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False)
