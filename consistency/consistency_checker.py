@@ -76,6 +76,16 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     database = 'vmsops'
     cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
 
+    # Establish the list of objects / designations / numbers / ... to be queried
+    desigs = [mc.unpacked_to_packed_desig(f'({x})') for x in range( n0,n1 )]
+
+    # Check the consistency of each design
+    for desig in desigs:
+    
+        # Get obs from flat files
+        # - returns a dict of obs, keyed on obs80_bit
+        obs_ff, probs_ff = ff.get_obs_from_ff(desig, DEBUG=DEBUG)
+
 
 def check_consistency(n0,n1, DEBUG = True):
     ''' High level function-call: used to check consistency of a list of numbered objects

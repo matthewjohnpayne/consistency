@@ -56,6 +56,9 @@ def get_obs_from_ff(desig, DEBUG=False):
         with open(outfile) as f:
             lines = f.readlines()
             obs_list = [_.strip() for _ in lines]
+            
+            
+    # Explicitly sort by time just-in-case
     
     return obs_list
 
@@ -94,6 +97,8 @@ def combine_two_line_obs(deduped_obs_list)
             obs_dict[obs80_bit] = line + deduped_obs_list[n+1]
         elif line[14] in ['s','v'] and deduped_obs_list[n-1][14] == line[14].upper()  :
             pass # because of previous logic
+            
+        # Could split these problems if desired / useful
         elif line[14] in ['S','V'] and deduped_obs_list[n+1][14] != line[14].lower()  or \
              line[14] in ['s','v'] and deduped_obs_list[n-1][14] != line[14].upper()  :
             #probs['status'].append( -2 )
@@ -165,6 +170,7 @@ def extract_original_observation( obs80_bit, artifact_data ):
     else:
         sys.exit('Multiple returns from artifact-match:%r' % obs80_bit)
     return obs80
+    
 
 def construct_correct_obs80( original_obs80 , incorrect_published_obs80 ):
     '''  Create a corrected version of published obs80 string(s) 
@@ -208,13 +214,13 @@ def construct_correct_obs80( original_obs80 , incorrect_published_obs80 ):
         # ... have consistent pub-refs & obscodes
         correct_obs80 = correct_obs80[:152] + correct_obs80[72:80]
 
-    # If initial version of corrrect_obs80 doesn't exist, then crap out as can't fix ... 
+    # If initial version of correct_obs80 doesn't exist, then crap out as can't fix ...
     try:
         print('extended___________________ ', correct_obs80)
     except:
         sys.exit('cannot fix ...', original_obs80 , incorrect_published_obs80)
 
-    # Using the cat_diff routine that was original developed to compare flat-0files / db
+    # Using the cat_diff routine that was original developed to compare flat-files / db
     # NB Needs equal lengths ...
     R = categorize_differences( correct_obs80, original_obs80 , DEBUG = False)
 
