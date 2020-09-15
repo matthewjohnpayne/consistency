@@ -158,7 +158,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
                 report = fix_primary_flat_file_data(desig, incorrect_list, correct_list )
                 print(f' report from fix_primary_flat_file_data : {report} ')
 
-            
+
 
 
 # ------------------------------------------------------------------------
