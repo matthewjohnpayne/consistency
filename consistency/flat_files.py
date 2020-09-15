@@ -93,6 +93,8 @@ def combine_two_line_obs(deduped_obs_list):
     '''
     obs_dict, probs = {}, []
     for n,line in enumerate(deduped_obs_list):
+        obs80_bit       = line[15:56]
+
         # Satellites & Roving
         if line[14] in ['S','V']   and deduped_obs_list[n+1][14] == line[14].lower()  :
             obs_dict[obs80_bit] = line + deduped_obs_list[n+1]
@@ -102,8 +104,6 @@ def combine_two_line_obs(deduped_obs_list):
         # Could split these problems if desired / useful
         elif line[14] in ['S','V'] and deduped_obs_list[n+1][14] != line[14].lower()  or \
              line[14] in ['s','v'] and deduped_obs_list[n-1][14] != line[14].upper()  :
-            #probs['status'].append( -2 )
-            #probs['line'].append( line )
             probs.append(line)
 
         # Standard lines 
