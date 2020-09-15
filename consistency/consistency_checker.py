@@ -154,9 +154,9 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
                 incorrect_list.append(incorrect_published_obs80)
 
             # Correct all of the orphans for a single flat file at once
-            if incorrect_list != []:
-                report = fix_primary_flat_file_data(desig, incorrect_list, correct_list )
-                print(f' report from fix_primary_flat_file_data : {report} ')
+            #if incorrect_list != []:
+            #    report = fix_primary_flat_file_data(desig, incorrect_list, correct_list )
+            #    print(f' report from fix_primary_flat_file_data : {report} ')
 
 
 
