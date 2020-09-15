@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+    #!/usr/bin/env python3
 '''
 
 '''
@@ -83,14 +83,14 @@ def find_duplicates(obs_list):
     return deduped_obs_list, probs
     
     
-def combine_two_line_obs(deduped_obs_list)
+def combine_two_line_obs(deduped_obs_list):
     '''
     # Find and combine 2-line obs ...
     # ... make dict key-ed on obs80 bit
     # NB : The check is being made under the
     # assumption that any dups have been removed ...
     '''
-    obs_dict = {}
+    obs_dict, probs = {}, []
     for n,line in enumerate(deduped_obs_list):
         # Satellites & Roving
         if line[14] in ['S','V']   and deduped_obs_list[n+1][14] == line[14].lower()  :
@@ -366,8 +366,10 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
             assert os.path.isfile(replace_file), 'replacement file {replace_file} does NOT exist which is bad'
         
             #*** (viii) Replace the primary data with the fixed copy
+            print('THE FOLLOWING COMMAND HAS BEEN COMMENTED-OUT !!!')
             print(f'replacing file={src_file} with file {replace_file} ')
             #shutil.copyfile(replace_file, src_file)
+            print('THE ABOVE WAS NOT DONE!!')
             
             #*** (ix) Recreate the index files if necessary
             #         NEED TO BE CAREFUL ABOUT THIS ...
