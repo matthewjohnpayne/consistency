@@ -126,7 +126,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
         # Fix simple duplicates ...
         if duplicates:
             print('Fixing duplicates ...')
-            report = fix_primary_flat_file_data(desig, duplicates, [] , DELETING=True )
+            report = ff.fix_primary_flat_file_data(desig, duplicates, [] , DELETING=True )
            
        
         # Attempt to fix sat/roving stuff here ...
@@ -155,7 +155,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
 
             # Correct all of the orphans for a single flat file at once
             #if incorrect_list != []:
-            #    report = fix_primary_flat_file_data(desig, incorrect_list, correct_list )
+            #    report = ff.fix_primary_flat_file_data(desig, incorrect_list, correct_list )
             #    print(f' report from fix_primary_flat_file_data : {report} ')
 
 
