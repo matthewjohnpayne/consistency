@@ -58,7 +58,10 @@ def get_obs_from_ff(desig, DEBUG=False):
             obs_list = [_.strip() for _ in lines]
             
             
-    # Explicitly sort by time just-in-case
+    # Explicitly sort by time ?
+    
+    # Get rid of the file
+    os.remove(outfile)
     
     return obs_list
 

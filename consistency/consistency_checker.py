@@ -120,7 +120,6 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
     # Are there other problems with the flat-file data that we can look for ?
     # (1) - Sometimes we do not have "Note 2" before 2020 in obs80: replace blank with default ?
 
-    '''
     # Identify and fix any problems within the flat-file data
     if duplicates or orphans :
         
@@ -159,7 +158,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
             #    report = fix_primary_flat_file_data(desig, incorrect_list, correct_list )
             #    print(f' report from fix_primary_flat_file_data : {report} ')
 
-    '''
+
     
 
 
