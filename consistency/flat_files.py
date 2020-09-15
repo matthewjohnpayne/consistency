@@ -68,18 +68,19 @@ def find_duplicates(obs_list):
         as it uses obs80-bit
     '''
     # Find any duplicate lines
-    deduped_obs_list, probs = [], []#defaultdict(list)
+    obs, deduped_obs_list, probs = Counter(), [], []#defaultdict(list)
     for n,line in enumerate(obs_list):
-        obs80_bit = line[15:56]
+        obs80_bit       = line[15:56]
         
         # put duplicates into problem-dict for now
         if obs80_bit in obs:
-            #probs['status'].append( -1 )
-            #probs['line'].append( line )
             probs.append(line)
         else:
             deduped_obs_list.append(line)
-    
+
+        # store AFTER above check !
+        obs[obs80_bit] += 1
+
     return deduped_obs_list, probs
     
     
