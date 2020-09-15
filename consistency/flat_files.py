@@ -130,18 +130,18 @@ def get_original_submission_id(obs80_bit, cnx):
 
         
 def find_original_submission_artifact(obs80_bit, cnx):
-    ''' From obs80_bit string(s), get original submission data (where possible) 
+    ''' From obs80_bit string(s), get original submission data (where possible)
 
-    NB : I wanted to use formatobs.txt, but sometimes doesn't exist, so using "artifact" instead
-    # - 3317 does not have a "formatobs" file ... gaps in artifact file ... how did it get processed ?
+    NB1 : I wanted to use formatobs.txt, but sometimes doesn't exist, so using "artifact" instead
+    NB2 : 3317 does not have a "formatobs" file ... gaps in artifact file ... how did it get processed ?
 
     inputs:
     -------
 
     returns:
     --------
-
-    '''
+    '''
+    
     # Get submission IDs from db (looks like '2020-06-23T00:43:11.000_0000DdpR')
     submission_id = get_original_submission_id(obs80_bit, cnx)
     splt=re.split('-|T', submission_id)
