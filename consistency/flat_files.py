@@ -12,7 +12,7 @@ import psycopg2
 import difflib
 import numpy as np 
 from astropy.time import Time
-from collections import defaultdict
+from collections import defaultdict, Counter
 import textwrap 
 import healpy as hp
 import glob
