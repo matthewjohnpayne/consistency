@@ -141,7 +141,6 @@ def find_original_submission_artifact(obs80_bit, cnx):
     returns:
     --------
     '''
-    
     # Get submission IDs from db (looks like '2020-06-23T00:43:11.000_0000DdpR')
     submission_id = get_original_submission_id(obs80_bit, cnx)
     splt=re.split('-|T', submission_id)
