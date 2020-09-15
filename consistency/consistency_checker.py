@@ -49,7 +49,8 @@ import ray
 # MPC IMPORTS
 # ------------------------------------------------------------------------
 import mpc_psql as psql
-import mpc_convert as mcimport mpc_new_processing_sub_directory as newsub
+import mpc_convert as mc
+import mpc_new_processing_sub_directory as newsub
 import status as mpc_status
 sys.path.insert(0, '/share/apps/obs80')
 import obs80 as o80
