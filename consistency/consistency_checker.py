@@ -45,6 +45,12 @@ try:
 except:
     ray.init()
 
+import lock
+L = lock.Locker.remote()
+print('timeout', ray.get(L.timeout.remote()))
+print('lock', ray.get(L.lock.remote()))
+
+
 # ------------------------------------------------------------------------
 # MPC IMPORTS
 # ------------------------------------------------------------------------
@@ -123,6 +129,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
     print('Getting obs from ff for ', desig)
     obs_ff = ff.get_obs_from_ff(desig, DEBUG=DEBUG)
 
+    '''
     # Look for duplicates
     deduped_obs_list, duplicates = ff.find_duplicates(obs_ff)
 
@@ -174,7 +181,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
         print(f'\t ... no problems found for {desig}')
 
     
-
+    '''
 
 # ------------------------------------------------------------------------
 # MAKING DB CONSISTENT WITH FF
