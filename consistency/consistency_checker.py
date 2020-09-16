@@ -93,7 +93,7 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     # NB : added in "ray" parallelization
     #try:
     results =  ray.get(
-                        [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig, DEBUG = True ) \
+                        [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig,cnx, DEBUG = True ) \
                         for desig in desigs ])
     #except:
     #    results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, DEBUG = True ) \
