@@ -12,7 +12,7 @@ import psycopg2
 import difflib
 import numpy as np 
 from astropy.time import Time
-from collections import defaultdict, Counter
+from collections import defaultdict, Counter, OrderedDict
 import textwrap 
 import healpy as hp
 import glob
@@ -71,15 +71,32 @@ def find_duplicates(obs_list):
         as it uses obs80-bit
     '''
     # Find any duplicate lines
-    obs, deduped_obs_list, probs = Counter(), [], []#defaultdict(list)
+    obs = OrderedDict()
     for n,line in enumerate(obs_list):
         obs80_bit       = line[15:56]
-        
-        # put duplicates into problem-dict for now
         if obs80_bit in obs:
-            probs.append(line)
+            obs[obs80_bit].append(line)
         else:
-            deduped_obs_list.append(line)
+            obs[obs80_bit] = [line]
+    
+    # Decide which line of any duplicates will be kept
+    deduped_obs_list, probs = [], []
+    for obs80_bit, lineList in obs.items():
+        # Singles are fine
+        if len(lineList) ==1:
+            deduped_obs_list.extend(lineList)
+        
+        # Put duplicates into problem-list for now
+        # I'm choosing one to keep by sorting on the pubn-ref and keeping the earliest
+        # If they are the same, it doesn't matter as they are duplicates
+        else:
+            pub_refs = [_[72:77] for _ in lineList]
+            print('pub_refs=', pub_refs)
+            pub_refs, lineList = zip(*sorted(zip(pub_refs, lineList)))
+            
+            # Keep one, discard the rest
+            deduped_obs_list.append(lineList[0])
+            probs.extend( lineList[1:] )
 
         # store AFTER above check !
         obs[obs80_bit] += 1
