@@ -85,10 +85,12 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     # Check the consistency of each design
     # NB : added in "ray" parallelization
     #try:
-    results =  ray.get(
+    if True:
+        results =  ray.get(
                         [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig, cnx=None, DEBUG = True ) \
                         for desig in desigs ])
     #except:
+    else:
     
         # Establish one-off connection to the database on mpcdb1
         # NB Despite being flat-file focused, we might need to
@@ -97,8 +99,8 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
         database = 'vmsops'
         cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
 
-    #    results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=cnx, DEBUG = True ) \
-    #                for desig in desigs ]
+        results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=cnx, DEBUG = True ) \
+                    for desig in desigs ]
                     
 @ray.remote
 def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=None, DEBUG = True ):
