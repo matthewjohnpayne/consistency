@@ -13,6 +13,18 @@ import status as mpc_status
 # Class/Actore to facilitate locking / acquiring "mpc_temp_status"
 # ------------------------------------------------------------------------
 @ray.remote
+class Counter(object):
+    def __init__(self):
+        self.n = 0
+
+    def increment(self):
+        self.n += 1
+
+    def read(self):
+        return self.n
+
+
+@ray.remote
 class Locker:
     timeout = 1000
     
@@ -63,5 +75,5 @@ class Locker:
                 mpc_status.set_status("mpc_temp_status", "")
                 return True
         else:
-            return False 
+            return False
         

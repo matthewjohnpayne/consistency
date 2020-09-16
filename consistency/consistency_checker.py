@@ -46,11 +46,13 @@ except:
     ray.init()
 
 import lock
-L = lock.Locker.remote()
+L = lock.Counter.remote()
+L.increment.remote()
+print('read.remote', ray.get(L.read.remote()))
 
-desired_status_string = 'ggg'
-print('timeout', ray.get(L.acquire_status.remote(desired_status_string)))
-print(mpc_status.get_status("mpc_temp_status"))
+#desired_status_string = 'ggg'
+#print('timeout', ray.get(L.acquire_status.remote(desired_status_string)))
+#print(mpc_status.get_status("mpc_temp_status"))
 mpc_status.set_status("mpc_temp_status", "")
 print(mpc_status.get_status("mpc_temp_status"))
 ray.shutdown()
