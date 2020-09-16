@@ -46,17 +46,6 @@ except:
     ray.init()
 
 import lock
-L = lock.Counter.remote()
-L.increment.remote()
-print('read.remote', ray.get(L.read.remote()))
-
-#desired_status_string = 'ggg'
-#print('timeout', ray.get(L.acquire_status.remote(desired_status_string)))
-#print(mpc_status.get_status("mpc_temp_status"))
-mpc_status.set_status("mpc_temp_status", "")
-print(mpc_status.get_status("mpc_temp_status"))
-ray.shutdown()
-sys.exit()
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS
@@ -119,6 +108,20 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
 def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=None, DEBUG = True ):
     '''
     '''
+    #desired_status_string = 'ggg'
+    #print('timeout', ray.get(L.acquire_status.remote(desired_status_string)))
+    #print(mpc_status.get_status("mpc_temp_status"))
+    #mpc_status.set_status("mpc_temp_status", "")
+    #print(mpc_status.get_status("mpc_temp_status"))
+    #ray.shutdown()
+    #sys.exit()
+    # Get the lock actor / class
+    A = ray.get_actor('CounterActor')
+    # Tell it to increase it's count
+    ray.get(A.increment.remote(1))
+    # Ask it what count its up to
+    print("Remote Counter is now up to ...", ray.get(A.get_count.remote())     )
+
     
     # If we did not get a connectino passed in, establish one
     # This is particularly important for ray-parallelization
@@ -311,8 +314,11 @@ if __name__ == "__main__":
     #                  int(sys.argv[2]),
     #                  DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False)
     
+    # Create ray actor
+    L = Counter.options(name='CounterActor').remote()
+    L.set_self_handler.remote(L)
     
-    # (i) Start by checking the internal self-consistency of the flat-files
+    # Check the internal self-consistency of the flat-files
     check_flat_file_internal_consistency(   int(sys.argv[1]),
                                             int(sys.argv[2]),
                                             DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False )

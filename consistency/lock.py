@@ -13,15 +13,24 @@ import status as mpc_status
 # Class/Actore to facilitate locking / acquiring "mpc_temp_status"
 # ------------------------------------------------------------------------
 @ray.remote
-class Counter(object):
+class Counter:
     def __init__(self):
-        self.n = 0
+        self.count = 0
 
-    def increment(self):
-        self.n += 1
+    def set_self_handler(self, handler):
+        self.handler = handler
 
-    def read(self):
-        return self.n
+    def wait(self):
+        if self.count == 0:
+            time.sleep(1)
+            self.handler.wait.remote()
+
+    def increment(self, n):
+        self.count += n
+
+    def get_count(self):
+        return self.count
+
 
 
 @ray.remote
