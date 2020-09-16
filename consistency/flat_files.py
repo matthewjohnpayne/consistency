@@ -293,7 +293,7 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
         fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=DELETING)
         
     
-    return ???
+    return True
         
 def fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=False):
     '''
