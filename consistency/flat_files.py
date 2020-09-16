@@ -276,8 +276,6 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
     --------
 
     '''
-    # We want to 'permanently' save some output files ...
-    save_dir = '/sa/conchecks/data_products/'
     
     #*** (i) Find the relevant primary data file [can be in /sa/mpn or in tot*]
     src_files = []
@@ -316,6 +314,8 @@ def fix_single_file(src_file, dst_dir, desig, incorrect_list, correct_list, DELE
     --------
 
     '''
+    # We want to 'permanently' save some output files ...
+    save_dir = '/sa/conchecks/data_products/'
 
 
     # (i) Freeze the system (lock status)
