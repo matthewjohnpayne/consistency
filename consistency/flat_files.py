@@ -479,7 +479,7 @@ def fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=Fals
 
     return True
 
-@lru_cache
+@lru_cache(16)
 def get_potential_source_files(desig):
     ''' Get filenames of potential source files for numbered object '''
     potential_source_files = []
@@ -500,7 +500,7 @@ def get_potential_source_files(desig):
     
     return potential_source_files
     
-@lru_cache
+@lru_cache(16)
 def get_contents_of_potential_source_files(desig):
     ''' read the contents of potential source files for numbered object '''
 
