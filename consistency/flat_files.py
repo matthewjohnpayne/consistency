@@ -98,9 +98,6 @@ def find_duplicates(obs_list):
             deduped_obs_list.append(lineList[0])
             probs.extend( lineList[1:] )
 
-        # store AFTER above check !
-        obs[obs80_bit] += 1
-
     return deduped_obs_list, probs
     
     
