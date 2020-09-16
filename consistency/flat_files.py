@@ -523,7 +523,7 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
     
     # Check which file(s) incorrect_published_obs80 is in
     src_files = []
-    for f, data  in content_dict:
+    for f, data  in content_dict.items():
         for line in data:
             if incorrect_published_obs80.strip() in line:
                 src_files.append(f)
