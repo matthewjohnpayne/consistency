@@ -182,7 +182,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
 # MAKING DB CONSISTENT WITH FF
 # - Older code that needs to be updated
 # ------------------------------------------------------------------------
-
+"""
 def check_consistency(n0,n1, DEBUG = True):
     ''' High level function-call: used to check consistency of a list of numbered objects
     
@@ -208,8 +208,8 @@ def check_consistency(n0,n1, DEBUG = True):
     # Check the consistency of each design
     for desig in desigs:
         check_desig(cnx, desig, DEBUG=DEBUG) 
-
-
+"""
+"""
 def check_desig(cnx, desig, DEBUG=False):
     ''' Declare a function to "process" / "fix" a *single* designation 
 
@@ -282,7 +282,8 @@ def check_desig(cnx, desig, DEBUG=False):
     '''
     result = compare_observations(cnx, obs_ff, obs_db, DEBUG=DEBUG)
     '''
-    
+"""
+
 def print_read_probs_dict(probs_dict, header_str):
     status_dict = {-1:'DUP', -2:'S/R', -3:'MAL', -4:'???'}
     print(f'{header_str}:probs with read-observations..')
