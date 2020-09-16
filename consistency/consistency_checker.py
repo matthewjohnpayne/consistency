@@ -315,7 +315,7 @@ if __name__ == "__main__":
     #                  DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False)
     
     # Create ray actor
-    L = Counter.options(name='CounterActor').remote()
+    L = lock.Counter.options(name='CounterActor').remote()
     L.set_self_handler.remote(L)
     
     # Check the internal self-consistency of the flat-files
