@@ -91,7 +91,6 @@ def find_duplicates(obs_list):
         # If they are the same, it doesn't matter as they are duplicates
         else:
             pub_refs = [_[72:77] for _ in lineList]
-            print('pub_refs=', pub_refs)
             pub_refs, lineList = zip(*sorted(zip(pub_refs, lineList)))
             
             # Keep one, discard the rest

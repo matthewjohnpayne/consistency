@@ -40,10 +40,10 @@ import copy
 # RAY PARALLELIZATION
 # ------------------------------------------------------------------------
 import ray
-#try:
-#    ray.init('auto')
-#except:
-#    ray.init()
+try:
+    ray.init('auto')
+except:
+    ray.init()
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS
@@ -90,12 +90,13 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     desigs = [mc.unpacked_to_packed_desig(f'({x})') for x in range( n0,n1 )]
 
     # Check the consistency of each design
-    #try:
-    #    results =  ray.get(
-    #                    [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig, DEBUG = True ) \
-    #                    for desig in desigs ])
-    #except:
-    results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, DEBUG = True ) \
+    # NB : added in "ray" parallelization 
+    try:
+        results =  ray.get(
+                        [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig, DEBUG = True ) \
+                        for desig in desigs ])
+    except:
+        results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, DEBUG = True ) \
                     for desig in desigs ]
                     
 #@ray.remote
