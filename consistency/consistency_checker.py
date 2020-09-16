@@ -60,7 +60,7 @@ import obs80 as o80
 # LOCAL IMPORTS
 # ------------------------------------------------------------------------
 import flat_files as ff
-import lock
+#import lock
 
 # ------------------------------------------------------------------------
 # FLAT-FILE-ONLY CHECKS 
