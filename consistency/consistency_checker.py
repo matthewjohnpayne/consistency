@@ -47,9 +47,14 @@ except:
 
 import lock
 L = lock.Locker.remote()
-print('timeout', ray.get(L.timeout.remote()))
-print('lock', ray.get(L.lock.remote()))
 
+desired_status_string = 'ggg'
+print('timeout', ray.get(L.acquire_status.remote(desired_status_string)))
+print(mpc_status.get_status("mpc_temp_status"))
+mpc_status.set_status("mpc_temp_status", "")
+print(mpc_status.get_status("mpc_temp_status"))
+ray.shutdown()
+sys.exit()
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS
