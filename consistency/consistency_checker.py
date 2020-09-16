@@ -124,13 +124,11 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
     obs_ff = ff.get_obs_from_ff(desig, DEBUG=DEBUG)
 
     # Look for duplicates
-    print('Looking for any duplicates ')
     deduped_obs_list, duplicates = ff.find_duplicates(obs_ff)
 
     # Look for 2-line obs
     # Combine together where possible
     # Identify problems where exist
-    print('Looking for orphan 2-line obs ...')
     obs_dict, orphans = ff.combine_two_line_obs(deduped_obs_list)
 
     # Are there other problems with the flat-file data that we can look for ?
@@ -141,12 +139,12 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
         
         # Fix simple duplicates ...
         if duplicates:
-            print('Fixing duplicates ...')
+            print('Fixing duplicates ...', desig)
             report = ff.fix_primary_flat_file_data(desig, duplicates, [] , DELETING=True )
            
         # Attempt to fix sat/roving stuff here ...
         if orphans:
-            print('Fixing orphans ...')
+            print('Fixing orphans ...', desig)
             correct_list, incorrect_list = [],[]
             for orphan in orphans:
             

@@ -47,7 +47,7 @@ def get_obs_from_ff(desig, DEBUG=False):
     #
     '''
     if DEBUG:
-        print('ff-query is basic: needs to be expanded to use findu & other (linked) designations')
+        pass # print('ff-query is basic: needs to be expanded to use findu & other (linked) designations')
         
     # Query stolen from Dave (see 'getobs_num.py)
     obs = []
@@ -290,12 +290,12 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
     #*** (ii) Loop over any files that need to be fixed ...
     dst_dir = newsub.generate_subdirectory( "obs_cons" )
     for src_file in src_files:
-        fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=DELETING)
+        fix_single_file(src_file, dst_dir, desig, incorrect_list, correct_list, DELETING=DELETING)
         
     
     return True
         
-def fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=False):
+def fix_single_file(src_file, dst_dir, desig, incorrect_list, correct_list, DELETING=False):
     '''
 
     *** Need to be really careful about this ***
