@@ -45,7 +45,6 @@ try:
 except:
     ray.init()
 
-import lock
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS
@@ -61,6 +60,7 @@ import obs80 as o80
 # LOCAL IMPORTS
 # ------------------------------------------------------------------------
 import flat_files as ff
+import lock
 
 # ------------------------------------------------------------------------
 # FLAT-FILE-ONLY CHECKS 
@@ -116,11 +116,11 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
     #ray.shutdown()
     #sys.exit()
     # Get the lock actor / class
-    A = ray.get_actor('CounterActor')
+    #A = ray.get_actor('CounterActor')
     # Tell it to increase it's count
-    ray.get(A.increment.remote(1))
+    #ray.get(A.increment.remote(1))
     # Ask it what count its up to
-    print("Remote Counter is now up to ...", ray.get(A.get_count.remote())     )
+    #print("Remote Counter is now up to ...", ray.get(A.get_count.remote())     )
 
     
     # If we did not get a connectino passed in, establish one
@@ -315,8 +315,8 @@ if __name__ == "__main__":
     #                  DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False)
     
     # Create ray actor
-    L = lock.Counter.options(name='CounterActor').remote()
-    L.set_self_handler.remote(L)
+    #L = lock.Counter.options(name='CounterActor').remote()
+    #L.set_self_handler.remote(L)
     
     # Check the internal self-consistency of the flat-files
     check_flat_file_internal_consistency(   int(sys.argv[1]),
