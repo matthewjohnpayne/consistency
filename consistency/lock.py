@@ -52,5 +52,16 @@ class Locker:
         return mpc_status.get_status("mpc_temp_status")
         
     def relinquish_status(self, desired_status_string):
+        
+        # Only attempt to change if the temp_status is what you think it is ...
         if mpc_status.get_status("mpc_temp_status") == desired_status_string:
+        
+            # wait to acquire lock from parallel workers
+            with self.lock.acquire(timeout=timeout):
             
+                # set empty status
+                mpc_status.set_status("mpc_temp_status", "")
+                return True
+        else:
+            return False 
+        
