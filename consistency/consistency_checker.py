@@ -99,7 +99,7 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     #    results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, DEBUG = True ) \
     #                for desig in desigs ]
                     
-#@ray.remote
+@ray.remote
 def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, DEBUG = True ):
     '''
     '''
