@@ -328,7 +328,7 @@ def fix_single_file(src_file, dst_dir, desig, incorrect_list, correct_list, DELE
         if mpc_status.get_status("mpc_temp_status") == '':
             mpc_status.set_status("mpc_temp_status", desired_status_string)
         
-    # If we get here, then it must be set to desired_status_string,
+    # If we get here, then it must have been set to desired_status_string,
     # so this process has the lock and can continue
     assert mpc_status.get_status("mpc_temp_status") == desired_status_string
     print('I now have the status lock ... ', desired_status_string )
@@ -475,7 +475,8 @@ def fix_single_file(src_file, dst_dir, desig, incorrect_list, correct_list, DELE
         print(e)
         print('\n'*2)
         print('Unsetting the mpc_temp_status as part of the EXCEPTION handling')
-        mpc_status.set_status("mpc_temp_status","")
+        if mpc_status.get_status("mpc_temp_status") == desired_status_string:
+            mpc_status.set_status("mpc_temp_status","")
 
     return True
 
