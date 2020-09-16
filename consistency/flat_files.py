@@ -19,6 +19,8 @@ import glob
 import re
 import shutil
 import copy
+from functools import lru_cache
+
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS
@@ -257,6 +259,7 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
     *** Need to be really careful about this ***
     *** Need to do something like ... ***
     *** (i) Find the relevant primary data file [can be in /sa/mpn or in tot*] 
+    *** (ii) Loop over any files that need to be fixed ...
     *** (ii) Freeze the system (lock status)
     *** (iii) Copy primary data file to temp location (esp. while developing) 
     *** (iv) Find the location of the incorrect data in the primary data file 
@@ -284,125 +287,181 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
     print('src_files = ', src_files)
     assert len(src_files), f'No src_file could be found that contains the incorrect data ... incorrect_list={incorrect_list}'
     
-    #*** (ii) Freeze the system (lock status)
+    #*** (ii) Loop over any files that need to be fixed ...
+    dst_dir = newsub.generate_subdirectory( "obs_cons" )
+    for src_file in src_files:
+        fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=DELETING):)
+        
+    
+    return ???
+        
+def fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=False):
+    '''
+
+    *** Need to be really careful about this ***
+    *** Need to do something like ... ***
+    *** (i) Freeze the system (lock status)
+    *** (ii) Copy primary data file to temp location (esp. while developing)
+    *** (iii) Find the location of the incorrect data in the primary data file
+    *** (iv) Replace the incorrect data with the correct data (non-trivial : needs to have pubn-record, etc)
+    *** (v) Do some sense checks of the difference between the initial and fixed versions
+    *** (vi)  write the data to the temp file
+    *** (vii) Replace the primary data with the fixed copy
+    *** (viii) Unlock the system
+
+    inputs:
+    -------
+
+    returns:
+    --------
+
+    '''
+
+
+    # (i) Freeze the system (lock status)
     # ~~~~~~~~~~~~~ IF WE CRAP OUT AT ANY POINT BELOW WE NEED TO RELEASE THE LOCK ~~~~~~~~~~~~~~~~~~
-    print('Setting mpc_temp_status')
-    mpc_status.set_status("mpc_temp_status","MJP_FIXING_PRIMARY_FLAT_FILES")
+    print('fix_single_file: desig')
+    print('Checking & Setting mpc_temp_status')
+    while mpc_status.get_status("mpc_temp_status") != desired_status_string :
+        print('waiting for mpc_temp_status to be released ...')
+        time.sleep(np.random.rand()*0.01)
+        if mpc_status.get_status("mpc_temp_status") == '':
+            mpc_status.set_status("mpc_temp_status", desired_status_string)
+        
+    # If we get here, then it must be set to desired_status_string,
+    # so this process has the lock and can continue
+    assert mpc_status.get_status("mpc_temp_status") == desired_status_string
+    print('I now have the status lock ... ', desired_status_string )
     
+    
+    # Wrapping everything in try-except loop with the goal of ensuring the status-lock is always released.
     try:
-        
-        #*** (iii) Copy primary data file to temp location (esp. while developing)
-        # I am allowing for the possibility that there are multiple files to be fixed ...
-        dst_dir = newsub.generate_subdirectory( "obs_cons" ) 
-        for src_file in src_files:
-            dst_file= os.path.join(  dst_dir , os.path.basename(src_file) ); print('dst_file = ',dst_file)
-            shutil.copyfile(src_file, dst_file )
-
-            # Read the primary data file
-            with open(dst_file,'r') as fh : data = fh.readlines()
-
-            # Files to write to so that MR can update mysql
-            bad_filepath  = os.path.join(save_dir, desig + '_bad.dat')
-            good_filepath = os.path.join(save_dir, desig + '_good.dat')
-            print(f' bad_filepath= {bad_filepath} , good_filepath= {good_filepath} ')
-            with open(bad_filepath, 'w') as bad_fh:
-                with open(good_filepath, 'w') as good_fh:
-
-                    # If we are deleting duplicates ...
-                    if DELETING :
-                        
-                        seen = {} 
-                        fixed_data = []
-                        incorrect_dict = {_:True for _ in incorrect_list}
-                        for line in data:
-                            # If the lines are to be deleted, record to tell MR so that the mysql database can be updated
-                            if line.strip('\n') in incorrect_dict and line not in seen:
-                                bad_fh.write(line)
-                            # If we are keeping the line ...
-                            else:
-                                fixed_data.append(line)
-                            # Record that we have seen the line so that we can stop ourselves deleting it twice!
-                            seen[line]=True
-                            
-                            
-                    # If not deleting, but doing replacement ... 
-                    else: 
-                        for incorrect_published_obs80, corrected_obs80 in zip(incorrect_list, correct_list) :
-                            fixed_data = []
-
-                            # Check the inputs 
-                            assert corrected_obs80 not in ['', ' ', [], [''], ['','']], \
-                                'corrected_obs80 = {corrected_obs80} : not sure that this routine can cope with such input ...'
-                            assert isinstance(incorrect_published_obs80, str), f'incorrect_published_obs80 is of type {type(incorrect_published_obs80)}, rather than a string'
     
-                            #*** (iv) Find the location of the incorrect data in the primary data file
-                            line_num = [i for i,line in enumerate(data) if incorrect_published_obs80.strip() in line]
-                            assert len(line_num) < 3, 'len(line_num)={len(line_num)} which is >=3 which seems like a suspiciously large number so I am terminating...'
-        
-                            #*** (v) Replace the incorrect data with the correct data (the correct data has been created earlier)
-                            #        At the same time we also output the incorrect & correct data to some files to be used to update the MYSQL database
-                            for n,line in enumerate(data):
-                                if n not in line_num :
-                                    # We keep the normal stuff as-is
-                                    fixed_data.append(line)
-                                else:
-                                    # For removal from mysql
-                                    bad_fh.write(line)
+        #*** (ii) Copy primary data file to temp location
+        #(esp. important while developing)
+        dst_file= os.path.join(  dst_dir , os.path.basename(src_file) ); print('dst_file = ',dst_file)
+        shutil.copyfile(src_file, dst_file )
 
-                                    if isinstance(corrected_obs80, str):
-                                        l = corrected_obs80 if corrected_obs80[-1]=='\n' else corrected_obs80+'\n'
-                                        # Corrected data for flat files 
+        # Read the primary data file
+        with open(dst_file,'r') as fh : data = fh.readlines()
+
+        # Files to write to so that MR can update mysql
+        bad_filepath  = os.path.join(save_dir, desig + '_bad.dat')
+        good_filepath = os.path.join(save_dir, desig + '_good.dat')
+        print(f' Files for MYSWL: bad_filepath= {bad_filepath} , good_filepath= {good_filepath} ')
+        with open(bad_filepath, 'w') as bad_fh:
+            with open(good_filepath, 'w') as good_fh:
+
+                # If we are deleting duplicates ...
+                if DELETING :
+                    
+                    seen = {}
+                    fixed_data = []
+                    incorrect_dict = {_:True for _ in incorrect_list}
+                    for line in data:
+                        # If the lines are to be deleted, record to tell MR so that the mysql database can be updated
+                        if line.strip('\n') in incorrect_dict and line not in seen:
+                            bad_fh.write(line)
+                        # If we are keeping the line ...
+                        else:
+                            fixed_data.append(line)
+                        # Record that we have seen the line so that we can stop ourselves deleting it twice!
+                        seen[line]=True
+                        
+                        
+                # If not deleting, but doing replacement ...
+                else:
+                    for incorrect_published_obs80, corrected_obs80 in zip(incorrect_list, correct_list) :
+                        fixed_data = []
+
+                        # Check the inputs
+                        assert corrected_obs80 not in ['', ' ', [], [''], ['','']], \
+                            'corrected_obs80 = {corrected_obs80} : not sure that this routine can cope with such input ...'
+                        assert isinstance(incorrect_published_obs80, str), \
+                            f'incorrect_published_obs80 is of type {type(incorrect_published_obs80)}, rather than a string'
+
+                        #*** (iv) Find the location of the incorrect data in the primary data file
+                        line_num = [i for i,line in enumerate(data) if incorrect_published_obs80.strip() in line]
+                        assert len(line_num) < 3, \
+                            'len(line_num)={len(line_num)} which is >=3 which seems like a suspiciously large number so I am terminating...'
+
+                        #*** (v) Replace the incorrect data with the correct data (the correct data has been created earlier)
+                        #        At the same time we also output the incorrect & correct data to some files to be used to update the MYSQL database
+                        for n,line in enumerate(data):
+                            if n not in line_num :
+                                # We keep the normal stuff as-is
+                                fixed_data.append(line)
+                            else:
+                                # For removal from mysql
+                                bad_fh.write(line)
+
+                                # 1-line ...
+                                if isinstance(corrected_obs80, str):
+                                    l = corrected_obs80 if corrected_obs80[-1]=='\n' else corrected_obs80+'\n'
+                                    # Corrected data for flat files
+                                    fixed_data.append(l)
+                                    # Corrected data for mysql
+                                    good_fh.write(l)
+                                # 2-line ...
+                                elif isinstance(corrected_obs80, list):
+                                    for _ in corrected_obs80:
+                                        l = _ if _[-1]=='\n' else _+'\n'
+                                        # Corrected data for flat files
                                         fixed_data.append(l)
                                         # Corrected data for mysql
                                         good_fh.write(l)
-                                    elif isinstance(corrected_obs80, list):
-                                        for _ in corrected_obs80:
-                                            l = _ if _[-1]=='\n' else _+'\n'
-                                            # Corrected data for flat files 
-                                            fixed_data.append(l)
-                                            # Corrected data for mysql
-                                            good_fh.write(l)
-                                    else:
-                                        sys.exit(f'corrected_obs80 is of type{type(corrected_obs80)}: do not know how to process')
+                                else:
+                                    sys.exit(f'corrected_obs80 is of type{type(corrected_obs80)}: do not know how to process')
 
-                            #*** (vi) Do some sense checks of the difference between the initial and fixed versions
-                            assert len(fixed_data) - len(data) == len(line_num), 'Lengths do not make sense: {len(fixed_data),len(data),len(line_num)} '
+                        #*** (vi) Do some sense checks of the difference between the initial and fixed versions
+                        assert len(fixed_data) - len(data) == len(line_num), \
+                            'Lengths do not make sense: {len(fixed_data),len(data),len(line_num)} '
 
-                            # copy fixed data into data ready for next loop around ...
-                            data = copy.deepcopy(fixed_data)
-                        
- 
-            #*** (vii)  write the data to the temp file 
-            replace_file = dst_file + 'replace'
-            assert not os.path.isfile(replace_file), 'replacement file {replace_file} already exists which is bad'
-            with open(replace_file,'w') as fh :
-                for line in fixed_data:
-                    l = line if line[-1]=='\n' else line+'\n'
-                    fh.write(l)
-            assert os.path.isfile(replace_file), 'replacement file {replace_file} does NOT exist which is bad'
+                        # copy fixed data into data ready for next loop around ...
+                        data = copy.deepcopy(fixed_data)
+                    
+
+        #*** (vii)  write the data to the temp file
+        #           NB This deals with both the DELETIONS and the FIXES
+        replace_file = dst_file + 'replace'
+        assert not os.path.isfile(replace_file), \
+            'replacement file {replace_file} already exists which is bad'
+        with open(replace_file,'w') as fh :
+            for line in fixed_data:
+                l = line if line[-1]=='\n' else line+'\n'
+                fh.write(l)
+        assert os.path.isfile(replace_file), \
+            'replacement file {replace_file} does NOT exist which is bad'
+
+
+        #*** (viii) Replace the primary data with the fixed copy
+        print('THE FOLLOWING COMMAND HAS BEEN COMMENTED-OUT !!!')
+        print(f'replacing file={src_file} with file {replace_file} ')
+        #shutil.copyfile(replace_file, src_file)
+        print('THE ABOVE WAS NOT DONE!!')
         
-            #*** (viii) Replace the primary data with the fixed copy
-            print('THE FOLLOWING COMMAND HAS BEEN COMMENTED-OUT !!!')
-            print(f'replacing file={src_file} with file {replace_file} ')
-            #shutil.copyfile(replace_file, src_file)
-            print('THE ABOVE WAS NOT DONE!!')
-            
-            #*** (ix) Recreate the index files if necessary
-            #         NEED TO BE CAREFUL ABOUT THIS ...
-            #         (a) Mike/Dave indicated this is only necessary if the file being altered is one of the permanent,
-            #             master files, rather than one of the temp *tot* files
-            #         (b) However, my inspection of /share/apps/mpec/publish_dou_mpec.sh, /share/apps/com/indexed/update.sh
-            #             (and sub-scripts) suggests that there *ARE* some form of index files for the temp/pending/within-month files
-            #         (c) TO gain some understanding, the monthly-prep rebuilds are done here : /sa/com/indexed/update.sh [SAME AS ABOVE]
-            #         (d) Given that ... calls /share/apps/com/indexed/buildnumupd.sh
-            #   *** I recall reading and re-reading the scripts that remake the numbered index files ***
-            #   *** And I recall deciding that perhaps it wasn't necessary to recreate the index files ***
-            #   *** This seems counter-intuitive : was I just thinking it would get done at the next DOU ? ***
+        
+        #*** (ix) Recreate the index files if necessary
+        #         NEED TO BE CAREFUL ABOUT THIS ...
+        #         (a) Mike/Dave indicated this is only necessary if the file being altered is one of the permanent,
+        #             master files, rather than one of the temp *tot* files
+        #         (b) However, my inspection of /share/apps/mpec/publish_dou_mpec.sh, /share/apps/com/indexed/update.sh
+        #             (and sub-scripts) suggests that there *ARE* some form of index files for the temp/pending/within-month files
+        #         (c) TO gain some understanding, the monthly-prep rebuilds are done here : /sa/com/indexed/update.sh [SAME AS ABOVE]
+        #         (d) Given that ... calls /share/apps/com/indexed/buildnumupd.sh
+        #   *** I recall reading and re-reading the scripts that remake the numbered index files ***
+        #   *** And I recall deciding that perhaps it wasn't necessary to IMMEDIATELY recreate the index files ***
+        #   *** This seems counter-intuitive : but the reasoning is as follows ...  ***
+        #   *** The index files do NOT actually point to the primary data files, but instead point to a COPY (without line-breaks) ***
+        #   *** This means that changes to the primary data do NOT cause malfunctions in the indexing ***
+        #   *** Hence we can do a whole raft of changes to the primary data files, and then only do a single re-indexing ***
+        #   *** This is useful as the reindexing takes a long time ***
+        #   *** NB, this obviously leaves the index files temporarily serving up crappy data ... ***
+        #   ***     but I regard this as acceptable as they were serving up crappy data before any fix anyway ***
 
-            #*** (xi) Remove / Tidy-up the temp files & temp dir
-            #shutil.rmtree(dst_dir)
-            #assert not os.path.isdir(dst_dir), f'dst_dir={dst_dir} still exists when it should NOT'
-
+        #*** (xi) Remove / Tidy-up the temp files & temp dir
+        #shutil.rmtree(dst_dir)
+        #assert not os.path.isdir(dst_dir), f'dst_dir={dst_dir} still exists when it should NOT'
 
         #*** (ix) Unlock the system
         print('Unsetting the mpc_temp_status')
@@ -420,10 +479,9 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
 
     return True
 
-    
-    
-def find_primary_data_file( desig, incorrect_published_obs80 ):
-    ''' #*** (i) Find the relevant primary data file [can be in /sa/mpn or in tot*] '''
+@lru_cache
+def get_potential_source_files(desig):
+    ''' Get filenames of potential source files for numbered object '''
     potential_source_files = []
     
     # Numbered master files look like N0123456.dat
@@ -440,13 +498,35 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
     # In-progress ( between monthly pubs) files are in different location ...
     potential_source_files.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
     
-    # Check which file(s) incorrect_published_obs80 is in
-    src_files = []
+    return potential_source_files
+    
+@lru_cache
+def get_contents_of_potential_source_files(desig):
+    ''' read the contents of potential source files for numbered object '''
+
+    # Get names of potential source files
+    potential_source_files = get_potential_source_files(desig)
+
+    # Read contents into a dict
+    content_dict = {}
     for f in potential_source_files:
         with open(f, "r") as fh:
-            for line in fh:
-                if incorrect_published_obs80.strip() in line:
-                    src_files.append(f)
+            content_dict[f] = fh.readlines()
+
+    return content_dict
+    
+def find_primary_data_file( desig, incorrect_published_obs80 ):
+    ''' #*** (i) Find the relevant primary data file [can be in /sa/mpn or in tot*] '''
+    
+    # Get contents of potential source files
+    content_dict = get_contents_of_potential_source_files(desig)
+    
+    # Check which file(s) incorrect_published_obs80 is in
+    src_files = []
+    for f, data  in content_dict:
+        for line in data:
+            if incorrect_published_obs80.strip() in line:
+                src_files.append(f)
                     
     # NB I am deliberately *NOT* returning the line number here ...
     # ... because there is a TINY chance the file will be altered ...
