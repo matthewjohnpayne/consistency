@@ -322,6 +322,7 @@ def fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=Fals
     # ~~~~~~~~~~~~~ IF WE CRAP OUT AT ANY POINT BELOW WE NEED TO RELEASE THE LOCK ~~~~~~~~~~~~~~~~~~
     print('fix_single_file: desig')
     print('Checking & Setting mpc_temp_status')
+    desired_status_string = 'Fixing Flat Files : {desig} : {src_file}'
     while mpc_status.get_status("mpc_temp_status") != desired_status_string :
         print('waiting for mpc_temp_status to be released ...')
         time.sleep(np.random.rand()*0.01)
