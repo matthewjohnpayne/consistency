@@ -290,7 +290,7 @@ def fix_primary_flat_file_data( desig, incorrect_list, correct_list, DELETING=Fa
     #*** (ii) Loop over any files that need to be fixed ...
     dst_dir = newsub.generate_subdirectory( "obs_cons" )
     for src_file in src_files:
-        fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=DELETING):)
+        fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=DELETING)
         
     
     return ???
@@ -470,7 +470,7 @@ def fix_single_file(src_file, desig, incorrect_list, correct_list, DELETING=Fals
     
     except Exception as e: 
         print('\n'*2)
-        print('EXCEPTION IN fix_primary_flat_file_data')
+        print('EXCEPTION IN fix_single_file')
         print('\n'*2)
         print(e)
         print('\n'*2)
