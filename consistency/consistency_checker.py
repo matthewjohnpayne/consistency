@@ -79,13 +79,6 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
 
     '''
 
-    # Establish one-off connection to the database on mpcdb1
-    # NB Despite being flat-file focused, we might need to
-    # get submission IDs from the database ...
-    host     = 'mpcdb1.cfa.harvard.edu'
-    database = 'vmsops'
-    cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
-
     # Establish the list of objects / designations / numbers / ... to be queried
     desigs = [mc.unpacked_to_packed_desig(f'({x})') for x in range( n0,n1 )]
 
@@ -93,16 +86,36 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     # NB : added in "ray" parallelization
     #try:
     results =  ray.get(
-                        [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig,cnx, DEBUG = True ) \
+                        [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig, cnx=None, DEBUG = True ) \
                         for desig in desigs ])
     #except:
-    #    results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, DEBUG = True ) \
+    
+        # Establish one-off connection to the database on mpcdb1
+        # NB Despite being flat-file focused, we might need to
+        # get submission IDs from the database ...
+        host     = 'mpcdb1.cfa.harvard.edu'
+        database = 'vmsops'
+        cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
+
+    #    results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=cnx, DEBUG = True ) \
     #                for desig in desigs ]
                     
 @ray.remote
-def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, DEBUG = True ):
+def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=None, DEBUG = True ):
     '''
     '''
+    
+    # If we did not get a connectino passed in, establish one
+    # This is particularly important for ray-parallelization
+    if cnx is None :
+        # Establish one-off connection to the database on mpcdb1
+        # NB Despite being flat-file focused, we might need to
+        # get submission IDs from the database ...
+        host     = 'mpcdb1.cfa.harvard.edu'
+        database = 'vmsops'
+        cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
+
+    
     # Get obs from flat files
     # - returns a list of obs
     print('Getting obs from ff for ', desig)
