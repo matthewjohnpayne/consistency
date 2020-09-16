@@ -121,8 +121,6 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
     # Get obs from flat files
     # - returns a list of obs
     print('Getting obs from ff for ', desig)
-    time.sleep(10)
-    '''
     obs_ff = ff.get_obs_from_ff(desig, DEBUG=DEBUG)
 
     # Look for duplicates
@@ -146,7 +144,6 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
             print('Fixing duplicates ...')
             report = ff.fix_primary_flat_file_data(desig, duplicates, [] , DELETING=True )
            
-       
         # Attempt to fix sat/roving stuff here ...
         if orphans:
             print('Fixing orphans ...')
@@ -175,7 +172,8 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
             #if incorrect_list != []:
             #    report = ff.fix_primary_flat_file_data(desig, incorrect_list, correct_list )
             #    print(f' report from fix_primary_flat_file_data : {report} ')
-    '''
+    else:
+        print(f'\t ... no problems found for {desig}')
 
     
 
