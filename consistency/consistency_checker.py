@@ -90,7 +90,7 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     desigs = [mc.unpacked_to_packed_desig(f'({x})') for x in range( n0,n1 )]
 
     # Check the consistency of each design
-    # NB : added in "ray" parallelization 
+    # NB : added in "ray" parallelization
     try:
         results =  ray.get(
                         [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig, DEBUG = True ) \
@@ -106,6 +106,8 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
     # Get obs from flat files
     # - returns a list of obs
     print('Getting obs from ff for ', desig)
+    time.sleep(10)
+    '''
     obs_ff = ff.get_obs_from_ff(desig, DEBUG=DEBUG)
 
     # Look for duplicates
@@ -158,7 +160,7 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx, D
             #if incorrect_list != []:
             #    report = ff.fix_primary_flat_file_data(desig, incorrect_list, correct_list )
             #    print(f' report from fix_primary_flat_file_data : {report} ')
-
+    '''
 
     
 
