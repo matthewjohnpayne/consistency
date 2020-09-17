@@ -548,6 +548,7 @@ def search_for_cross_designation_duplicates():
     # We want to 'permanently' save some output files ...
     save_dir = '/sa/conchecks/data_products/'
 
+    # ------------ NUMBERED FILES ------------------
     # Primary, published files
     files_ = glob.glob(f'/sa/mpn/N*dat', recursive=True)
     files_.extend(glob.glob(f'/sa/mpn/N*ADD', recursive=True))
@@ -556,19 +557,25 @@ def search_for_cross_designation_duplicates():
     files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
     
     # Save the num:file mapping, just in case ...
-    files_ = { n:f for n,f in enumerate(files_)}
-    num    = { n:True for n,f in files_.items() } # Later on might want unnum files as well
+    file_dict = { n:f for n,f in enumerate(files_)}
+    num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
+    
+    # ---------------- UN-numbered FILES -----------
+    
+    # ---------------- File-Mapping -----------
     filepath = os.path.join(save_dir,'file_num_mapping.txt')
     with open( filepath,'w') as fh:
-        for n,f in files_.items():
+        for n,f in file_dict.items():
             fh.write(f'{n},{f}\n')
     print('created...', filepath)
     
+    
+    # ---------------- Big data read ----------
     # Read the data into a single, massive dictionary
     # This is going to be challenging
     ALL = {}
     DUP = defaultdict(list)
-    for n,f in files_.items():
+    for n,f in file_dict.items():
         print(n,f)
         
         with open(f,'r') as fh:
@@ -594,7 +601,6 @@ def search_for_cross_designation_duplicates():
         ALL.update(DUP)
         print('\t',len(ALL), len(DUP))
 
-        
         # do a sanity print-out of the last input obs80bit
         lastkey = list(local.keys())[-1]
         print('\t'*2,' ...last key:value',lastkey, ALL[lastkey])
@@ -602,12 +608,16 @@ def search_for_cross_designation_duplicates():
         del local
         del intersecn
         
+        # Because I am impatient, I will print out the entire dict any time there is content ...
+        if DUP:
+            # save the duplicates to file
+            filepath=os.path.join(save_dir,'duplicates.txt')
+            with open( filepath,'w') as fh:
+                for obs80bit, lst in DUP.items():
+                    for i,n in enumerate(lst):
+                        fh.write(f'{obs80bit},{i},{file_dict[n]}\n')
+            print('\t'*3,'created/updated:', filepath)
+
+        
     del ALL
     
-    # save the duplicates to file
-    filepath=os.path.join(save_dir,'duplicates.txt')
-    with open( filepath,'w') as fh:
-        for obs80bit, lst in DUP.items():
-            for i,n in enumerate(lst):
-                fh.write(f'{obs80bit},{i},{files_[n]}\n')
-    print('created...', filepath)
