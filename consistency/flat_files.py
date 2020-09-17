@@ -556,7 +556,7 @@ def search_for_cross_designation_duplicates():
     files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
     
     # Save the num:file mapping, just in case ...
-    files_ = { n:f for n,f in enumerate(files_[:7])}
+    files_ = { n:f for n,f in enumerate(files_)}
     num    = { n:True for n,f in files_.items() } # Later on might want unnum files as well
     filepath = os.path.join(save_dir,'file_num_mapping.txt')
     with open( filepath,'w') as fh:
