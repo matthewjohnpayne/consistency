@@ -561,8 +561,8 @@ def search_for_cross_designation_duplicates():
     num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
     
     # ---------------- UN-numbered FILES -----------
-    files_ = glob.glob(f'/sa/mpu/*dat', recursive=True)
-    files_ = glob.glob(f'/sa/mpu/*ADD', recursive=True)
+    files_.extend(glob.glob(f'/sa/mpu/*dat', recursive=True))
+    files_.extend(glob.glob(f'/sa/mpu/*ADD', recursive=True))
     
     file_dict = { n:f for n,f in enumerate(files_)}
     num       = { n:True if n in num else False for n,f in file_dict.items()}
