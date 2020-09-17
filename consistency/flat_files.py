@@ -573,7 +573,7 @@ def search_for_cross_designation_duplicates():
         for n,f in file_dict.items():
             fh.write(f'{n},{f},{num[n]}\n')
     print('created...', filepath)
-    sys.exit()
+    
     
     # ---------------- Big data read ----------
     # Read the data into a single, massive dictionary
