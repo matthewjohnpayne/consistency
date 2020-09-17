@@ -561,14 +561,19 @@ def search_for_cross_designation_duplicates():
     num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
     
     # ---------------- UN-numbered FILES -----------
+    files_ = glob.glob(f'/sa/mpu/*dat', recursive=True)
+    files_ = glob.glob(f'/sa/mpu/*ADD', recursive=True)
     
+    file_dict = { n:f for n,f in enumerate(files_)}
+    num       = { n:True if n in num else False for n,f in file_dict.items()}
+
     # ---------------- File-Mapping -----------
     filepath = os.path.join(save_dir,'file_num_mapping.txt')
     with open( filepath,'w') as fh:
         for n,f in file_dict.items():
-            fh.write(f'{n},{f}\n')
+            fh.write(f'{n},{f},{num[n]}\n')
     print('created...', filepath)
-    
+    sys.exit()
     
     # ---------------- Big data read ----------
     # Read the data into a single, massive dictionary
@@ -615,7 +620,7 @@ def search_for_cross_designation_duplicates():
             with open( filepath,'w') as fh:
                 for obs80bit, lst in DUP.items():
                     for i,n in enumerate(lst):
-                        fh.write(f'{obs80bit},{i},{file_dict[n]}\n')
+                        fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
             print('\t'*3,'created/updated:', filepath)
 
         
