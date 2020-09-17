@@ -597,7 +597,7 @@ def search_for_cross_designation_duplicates():
         
         # do a sanity print-out of the last input obs80bit
         lastkey = list(local.keys())[-1]
-        print('\t'*2,ALL[lastkey])
+        print('\t'*2,' ...last key:value',lastkey, ALL[lastkey])
         
         del local
         del intersecn
