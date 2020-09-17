@@ -557,6 +557,7 @@ def search_for_cross_designation_duplicates():
     
     # Save the num:file mapping, just in case ...
     files_ = { n:f for n,f in enumerate(files_[:7])}
+    num    = { n:True for f in files} # Later on might want unnum files as well
     filepath = os.path.join(save_dir,'file_num_mapping.txt')
     with open( filepath,'w') as fh:
         for n,f in files_.items():
@@ -572,7 +573,8 @@ def search_for_cross_designation_duplicates():
         
         with open(f,'r') as fh:
             # local dict maps obs80-bit to integer representing file
-            local     = {line[15:56]:n for line in fh}
+            # NB: ignoring second-line obs
+            local     = {line[15:56]:n for line in fh if line[14] not in ['s','v']}
             
         # intersecn indicates duplicate obs80-bits
         intersecn = local.keys() & ALL.keys()
