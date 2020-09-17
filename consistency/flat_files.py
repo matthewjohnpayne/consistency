@@ -557,9 +557,11 @@ def search_for_cross_designation_duplicates():
     
     # Save the num:file mapping, just in case ...
     files_ = { n:f for n,f in enumerate(files_[:7])}
-    with open( os.path.join(save_dir,'file_num_mapping.txt'),'w') as fh:
+    filepath = os.path.join(save_dir,'file_num_mapping.txt')
+    with open( filepath,'w') as fh:
         for n,f in files_.items():
             fh.write(f'{n}:{f}\n')
+    print('created...', filepath)
     sys.exit()
     # Read the data into a single, massive dictionary
     # This is going to be challenging
@@ -595,7 +597,9 @@ def search_for_cross_designation_duplicates():
     del ALL
     
     # save the duplicates to file
-    with open( os.path.join(save_dir,'duplicates.txt'),'w') as fh:
+    filepath=os.path.join(save_dir,'duplicates.txt')
+    with open( filepath,'w') as fh:
         for obs80bit, lst in DUP.items():
             for i,n in enumerate(lst):
                 fh.write(f'{obs80bit},{i},{files_[n]}\n')
+    print('created...', filepath)
