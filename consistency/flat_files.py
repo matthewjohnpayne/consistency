@@ -534,3 +534,65 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
     # ... between now and when I lock the file 
     return list(set(src_files))
    
+def search_for_cross_designation_duplicates()
+    '''
+    There's a possibility that the same observation has
+    been published against multiple object-designations
+    Let's check for that
+    
+    NB I am not explicitly checking for duplicates WITHIN files here:
+     - I am assuming I do that elsewhere ...
+    '''
+    # We want to 'permanently' save some output files ...
+    save_dir = '/sa/conchecks/data_products/'
+
+    # Primary, published files
+    files_ = glob.glob(f'/sa/mpn/N*dat', recursive=True)
+    files_.extend(glob.glob(f'/sa/mpn/N*ADD', recursive=True))
+    
+    # In-progress ( between monthly pubs) files are in different location ...
+    files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
+    
+    # Save the num:file mapping, just in case ...
+    files_ = { n:f for n,f in enumerate(files_[:7])}
+    with open( os.path.join(save_dir,'file_num_mapping.txt'),'w') as fh:
+        for n,f in files_.items():
+            fh.write(f'{n}:{f}\n')
+    sys.exit()
+    # Read the data into a single, massive dictionary
+    # This is going to be challenging
+    ALL = {}
+    DUP = defaultdict(list)
+    for n,f in files_.items():
+        print(n,f)
+        with open(f,'r') as fh:
+            # local dict maps obs80-bit to integer representing file
+            local     = {line[15:56]:n for line in fh]}
+            
+        # intersecn indicates duplicate obs80-bits
+        intersecn = local.keys() & ALL.keys()
+        
+        # store duplicates with list of file-integers
+        for k in intersecn:
+            DUP[k].append(local[k])
+            if isinstance(ALL[k], int):
+                DUP[k].append(ALL[k])
+            else:
+                DUP[k].extend(ALL[k])
+
+        # update the overall dictionary with local data
+        ALL.update(local)
+        
+        # update the overall dictionary with the duplicates
+        ALL.update(DUP)
+        print('\t',len(ALL), len(DUP))
+        del local
+        del intersecn
+        
+    del ALL
+    
+    # save the duplicates to file
+    with open( os.path.join(save_dir,'duplicates.txt'),'w') as fh:
+        for obs80bit, lst in DUP.items():
+            for i,n in enumerate(lst):
+                fh.write(f'{obs80bit},{i},{files_[n]}\n')

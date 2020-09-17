@@ -193,6 +193,10 @@ def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=No
     
     '''
 
+
+
+
+
 # ------------------------------------------------------------------------
 # MAKING DB CONSISTENT WITH FF
 # - Older code that needs to be updated
@@ -314,12 +318,10 @@ if __name__ == "__main__":
     #                  int(sys.argv[2]),
     #                  DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False)
     
-    # Create ray actor
-    #L = lock.Counter.options(name='CounterActor').remote()
-    #L.set_self_handler.remote(L)
-    
     # Check the internal self-consistency of the flat-files
-    check_flat_file_internal_consistency(   int(sys.argv[1]),
-                                            int(sys.argv[2]),
-                                            DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False )
+    #check_flat_file_internal_consistency(   int(sys.argv[1]),
+    #                                        int(sys.argv[2]),
+    #                                        DEBUG = True if len(sys.argv) > 3 and ( bool(sys.argv[3]) or sys.argv[3] == 'DEBUG') else False )
     
+    # search_for_cross_designation_duplicates
+    ff.search_for_cross_designation_duplicates()
