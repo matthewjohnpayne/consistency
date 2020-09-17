@@ -593,6 +593,12 @@ def search_for_cross_designation_duplicates():
         # update the overall dictionary with the duplicates
         ALL.update(DUP)
         print('\t',len(ALL), len(DUP))
+
+        
+        # do a sanity print-out of the last input obs80bit
+        lastkey = list(local.keys())[-1]
+        print('\t'*2,ALL[lastkey])
+        
         del local
         del intersecn
         
