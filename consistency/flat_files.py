@@ -534,7 +534,7 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
     # ... between now and when I lock the file 
     return list(set(src_files))
    
-def search_for_cross_designation_duplicates()
+def search_for_cross_designation_duplicates():
     '''
     There's a possibility that the same observation has
     been published against multiple object-designations
@@ -543,6 +543,8 @@ def search_for_cross_designation_duplicates()
     NB I am not explicitly checking for duplicates WITHIN files here:
      - I am assuming I do that elsewhere ...
     '''
+    print('search_for_cross_designation_duplicates')
+    
     # We want to 'permanently' save some output files ...
     save_dir = '/sa/conchecks/data_products/'
 
