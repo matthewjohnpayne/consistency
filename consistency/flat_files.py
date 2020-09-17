@@ -560,9 +560,9 @@ def search_for_cross_designation_duplicates():
     filepath = os.path.join(save_dir,'file_num_mapping.txt')
     with open( filepath,'w') as fh:
         for n,f in files_.items():
-            fh.write(f'{n}:{f}\n')
+            fh.write(f'{n},{f}\n')
     print('created...', filepath)
-    sys.exit()
+    
     # Read the data into a single, massive dictionary
     # This is going to be challenging
     ALL = {}
