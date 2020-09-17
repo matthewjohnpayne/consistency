@@ -40,10 +40,10 @@ import copy
 # RAY PARALLELIZATION
 # ------------------------------------------------------------------------
 import ray
-try:
-    ray.init('auto')
-except:
-    ray.init()
+#try:
+#    ray.init('auto')
+#except:
+#    ray.init()
 
 
 # ------------------------------------------------------------------------

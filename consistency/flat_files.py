@@ -567,9 +567,10 @@ def search_for_cross_designation_duplicates():
     DUP = defaultdict(list)
     for n,f in files_.items():
         print(n,f)
+        
         with open(f,'r') as fh:
             # local dict maps obs80-bit to integer representing file
-            local     = {line[15:56]:n for line in fh]}
+            local     = {line[15:56]:n for line in fh}
             
         # intersecn indicates duplicate obs80-bits
         intersecn = local.keys() & ALL.keys()
