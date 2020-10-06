@@ -10,7 +10,7 @@ from filelock import FileLock
 import status as mpc_status
 
 # ------------------------------------------------------------------------
-# Class/Actore to facilitate locking / acquiring "mpc_temp_status"
+# Class/Actor to facilitate locking / acquiring "mpc_temp_status"
 # ------------------------------------------------------------------------
 @ray.remote
 class Counter:
@@ -38,6 +38,7 @@ class Locker:
     timeout = 1000
     
     def __init__(self):
+    
         # Using a separate lock file to prevent my multiple
         # workers/functions stealing it from one another
         self.lock = filelock.FileLock(os.path.expanduser("~/.sim.lock"))

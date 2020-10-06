@@ -21,6 +21,10 @@ import shutil
 import copy
 from functools import lru_cache
 
+# ------------------------------------------------------------------------
+# RAY PARALLELIZATION
+# ------------------------------------------------------------------------
+import ray
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS
@@ -32,10 +36,93 @@ import status as mpc_status
 sys.path.insert(0, '/share/apps/obs80')
 import obs80 as o80
 
+
+# ------------------------------------------------------------------------
+# HIGH-LEVEL CONSISTENCY CHECKING FUNCTIONS
+# ------------------------------------------------------------------------
+@ray.remote
+def establish_internal_consistency_of_flat_files_for_single_desig( desig, proc_dir, cnx=None, DEBUG = True ):
+    '''
+    '''
+    print(f'Inside *establish_internal_consistency_of_flat_files_for_single_desig*: desig={desig}')
+    
+    # If we did not get a connection passed in, establish one
+    # This is particularly important for ray-parallelization
+    if cnx is None :
+    
+        # Establish one-off connection to the database on mpcdb1
+        # NB Despite being flat-file focused, we might need to
+        # get submission IDs from the database ...
+        host     = 'mpcdb1.cfa.harvard.edu'
+        database = 'vmsops'
+        cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
+
+    
+    # Get obs from flat files
+    # - returns a list of obs
+    print('Getting obs from ff for ', desig)
+    obs_ff = ff.get_obs_from_ff(desig, proc_dir, DEBUG=DEBUG)
+
+    '''
+    # Look for duplicates
+    deduped_obs_list, duplicates = ff.find_duplicates(obs_ff)
+
+    # Look for 2-line obs
+    # Combine together where possible
+    # Identify problems where exist
+    obs_dict, orphans = ff.combine_two_line_obs(deduped_obs_list)
+
+    # Are there other problems with the flat-file data that we can look for ?
+    # (1) - Sometimes we do not have "Note 2" before 2020 in obs80: replace blank with default ?
+
+    # Identify and fix any problems within the flat-file data
+    if duplicates or orphans :
+        
+        # Fix simple duplicates ...
+        if duplicates:
+            print('Fixing duplicates ...', desig)
+            report = ff.fix_primary_flat_file_data(desig, duplicates, [] , DELETING=True )
+           
+        # Attempt to fix sat/roving stuff here ...
+        if orphans:
+            print('Fixing orphans ...', desig)
+            correct_list, incorrect_list = [],[]
+            for orphan in orphans:
+            
+                # Extract the obs80 bit ...
+                obs80_bit       = orphan[15:56]
+                print(f'orphan={orphan}, obs80_bit={obs80_bit}')
+                
+                # Find the original observations
+                original_obs80_artifact  = ff.extract_original_observation(obs80_bit , ff.find_original_submission_artifact(obs80_bit, cnx) )
+                print(f'original_obs80_artifact  : {original_obs80_artifact} ')
+                print(f'incorrect_published_obs80  : {incorrect_published_obs80} ')
+                
+                # Construct a corrected obs80 bit
+                corrected_obs80 = ff.construct_correct_obs80( \
+                                        original_obs80_artifact ,
+                                        incorrect_published_obs80 )
+                print(f'corrected_obs80 : {corrected_obs80} ')
+
+                correct_list.append(corrected_obs80)
+                incorrect_list.append(incorrect_published_obs80)
+
+            # Correct all of the orphans for a single flat file at once
+            #if incorrect_list != []:
+            #    report = ff.fix_primary_flat_file_data(desig, incorrect_list, correct_list )
+            #    print(f' report from fix_primary_flat_file_data : {report} ')
+    else:
+        print(f'\t ... no problems found for {desig}')
+
+    
+    '''
+
+
+
 # ------------------------------------------------------------------------
 # FUNCTIONS RELATED TO READING FROM FLAT-FILES
 # ------------------------------------------------------------------------
-def get_obs_from_ff(desig, DEBUG=False):
+def get_obs_from_ff(desig, proc_dir, DEBUG=False):
     '''
     # Get obs from flat files 
     # - Do we need to search using findn & findu on multiple "identifications" ?  
@@ -51,18 +138,21 @@ def get_obs_from_ff(desig, DEBUG=False):
         
     # Query stolen from Dave (see 'getobs_num.py)
     obs = []
-    outfile = desig + "_ff.obs"
+    outfile = os.path.join(proc_dir, desig + "_ff.obs")
     cmd = f"""$findn -o={outfile} -O={desig}"""
     os.system(cmd)
     if os.path.isfile(outfile):       
         with open(outfile) as f:
             lines = f.readlines()
             obs_list = [_.strip() for _ in lines]
-            
+    else:
+        print(f'outfile:{outfile} did *NOT* get generated')
             
     # Explicitly sort by time ?
     
     # Get rid of the file
+    # This is to stop the build-up of huge quantities of data in
+    # the local and/or processing directories.
     os.remove(outfile)
     
     return obs_list

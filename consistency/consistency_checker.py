@@ -40,10 +40,7 @@ import copy
 # RAY PARALLELIZATION
 # ------------------------------------------------------------------------
 import ray
-#try:
-#    ray.init('auto')
-#except:
-#    ray.init()
+ray.init('auto')
 
 
 # ------------------------------------------------------------------------
@@ -60,7 +57,6 @@ import obs80 as o80
 # LOCAL IMPORTS
 # ------------------------------------------------------------------------
 import flat_files as ff
-#import lock
 
 # ------------------------------------------------------------------------
 # FLAT-FILE-ONLY CHECKS 
@@ -83,15 +79,20 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
 
     # Establish the list of objects / designations / numbers / ... to be queried
     desigs = [mc.unpacked_to_packed_desig(f'({x})') for x in range( n0,n1 )]
+    
+    # Establish a processing directory to work in ...
+    proc_dir = newsub.generate_subdirectory( "obs_cons" )
 
     # Check the consistency of each design
-    # NB : added in "ray" parallelization
-    #try:
+    # (i) "ray" parallelization option
     if True:
         results =  ray.get(
-                        [    establish_internal_consistency_of_flat_files_for_single_desig.remote( desig, cnx=None, DEBUG = True ) \
+                        [    establish_internal_consistency_of_flat_files_for_single_desig.remote(  desig,
+                                                                                                    proc_dir,
+                                                                                                    cnx=None,
+                                                                                                    DEBUG = True ) \
                         for desig in desigs ])
-    #except:
+    #(ii) serial route
     else:
     
         # Establish one-off connection to the database on mpcdb1
@@ -101,98 +102,13 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
         database = 'vmsops'
         cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
 
-        results =  [    establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=cnx, DEBUG = True ) \
-                    for desig in desigs ]
+        #
+        results =  [ establish_internal_consistency_of_flat_files_for_single_desig( desig,
+                                                                                    proc_dir,
+                                                                                    cnx=cnx,
+                                                                                    DEBUG = True ) \
+                        for desig in desigs ]
                     
-@ray.remote
-def establish_internal_consistency_of_flat_files_for_single_desig( desig, cnx=None, DEBUG = True ):
-    '''
-    '''
-    #desired_status_string = 'ggg'
-    #print('timeout', ray.get(L.acquire_status.remote(desired_status_string)))
-    #print(mpc_status.get_status("mpc_temp_status"))
-    #mpc_status.set_status("mpc_temp_status", "")
-    #print(mpc_status.get_status("mpc_temp_status"))
-    #ray.shutdown()
-    #sys.exit()
-    # Get the lock actor / class
-    #A = ray.get_actor('CounterActor')
-    # Tell it to increase it's count
-    #ray.get(A.increment.remote(1))
-    # Ask it what count its up to
-    #print("Remote Counter is now up to ...", ray.get(A.get_count.remote())     )
-
-    
-    # If we did not get a connectino passed in, establish one
-    # This is particularly important for ray-parallelization
-    if cnx is None :
-        # Establish one-off connection to the database on mpcdb1
-        # NB Despite being flat-file focused, we might need to
-        # get submission IDs from the database ...
-        host     = 'mpcdb1.cfa.harvard.edu'
-        database = 'vmsops'
-        cnx = psycopg2.connect(f"host={host} dbname={database} user=postgres")
-
-    
-    # Get obs from flat files
-    # - returns a list of obs
-    print('Getting obs from ff for ', desig)
-    obs_ff = ff.get_obs_from_ff(desig, DEBUG=DEBUG)
-
-    '''
-    # Look for duplicates
-    deduped_obs_list, duplicates = ff.find_duplicates(obs_ff)
-
-    # Look for 2-line obs
-    # Combine together where possible
-    # Identify problems where exist
-    obs_dict, orphans = ff.combine_two_line_obs(deduped_obs_list)
-
-    # Are there other problems with the flat-file data that we can look for ?
-    # (1) - Sometimes we do not have "Note 2" before 2020 in obs80: replace blank with default ?
-
-    # Identify and fix any problems within the flat-file data
-    if duplicates or orphans :
-        
-        # Fix simple duplicates ...
-        if duplicates:
-            print('Fixing duplicates ...', desig)
-            report = ff.fix_primary_flat_file_data(desig, duplicates, [] , DELETING=True )
-           
-        # Attempt to fix sat/roving stuff here ...
-        if orphans:
-            print('Fixing orphans ...', desig)
-            correct_list, incorrect_list = [],[]
-            for orphan in orphans:
-            
-                # Extract the obs80 bit ...
-                obs80_bit       = orphan[15:56]
-                print(f'orphan={orphan}, obs80_bit={obs80_bit}')
-                
-                # Find the original observations
-                original_obs80_artifact  = ff.extract_original_observation(obs80_bit , ff.find_original_submission_artifact(obs80_bit, cnx) )
-                print(f'original_obs80_artifact  : {original_obs80_artifact} ')
-                print(f'incorrect_published_obs80  : {incorrect_published_obs80} ')
-                
-                # Construct a corrected obs80 bit
-                corrected_obs80 = ff.construct_correct_obs80( \
-                                        original_obs80_artifact ,
-                                        incorrect_published_obs80 )
-                print(f'corrected_obs80 : {corrected_obs80} ')
-
-                correct_list.append(corrected_obs80)
-                incorrect_list.append(incorrect_published_obs80)
-
-            # Correct all of the orphans for a single flat file at once
-            #if incorrect_list != []:
-            #    report = ff.fix_primary_flat_file_data(desig, incorrect_list, correct_list )
-            #    print(f' report from fix_primary_flat_file_data : {report} ')
-    else:
-        print(f'\t ... no problems found for {desig}')
-
-    
-    '''
-
 
 
 
