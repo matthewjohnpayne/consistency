@@ -160,6 +160,7 @@ def search_for_cross_designation_duplicates():
     del ALL
     '''
 
+    """
     # Get the list of pairs we need to check
     pairs = []
     for i in range(len(file_dict)):
@@ -169,10 +170,34 @@ def search_for_cross_designation_duplicates():
     print(f'Need to check {len(pairs)} pairs to find duplicates...')
     random.shuffle(pairs)
     print('\t e.g.', pairs[:10])
+    """
+    
+    # For each file, get the list of other files agsinst which it must be checked
+    # NB "triangular", so don't repeat pair-wise comparisons.
+    list_of_lists = [ (i,list(range(i+1,len(file_dict)))) for i in range(len(file_dict)) ]
 
     # ------------ FILE READ --------------------
     
     # Read all of the observations in a parallel style-ee
+    for tup in list_of_lists:
+        i   = tup[0]
+        lst = tup[1]
+        print('looping ... ',i, len(lst))
+        
+        # Read the i-file
+        with open(file_dict[i],'r') as fh1:
+            d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
+            
+        # Compare the i-file against all other files in the "lst" list
+        list_of_dup_dicts_for_i = [ff.compare_file_against_provided_file_dict(d1, file_dict[i2], i,i2) for i2 in lst]
+        
+        # Combine all presented dictionaries into a single dictionary
+        list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_i))
+        
+        print('\t-------',len(list_of_dup_dicts_for_i),len(list_of_dup_dicts[-1]))
+        sys.exit()
+
+    """
     list_of_dup_dicts = []
     chunk = 200
     for k in range(0,len(pairs),chunk):
@@ -193,6 +218,7 @@ def search_for_cross_designation_duplicates():
         # Combine all presented dictionaries into a single dictionary
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk))
         print('\t-------',len(list_of_dup_dicts[0]))
+    """
         
     # Combine into a single dictionary
     DUPS = combine_list_dup_dicts(list_of_dup_dicts)

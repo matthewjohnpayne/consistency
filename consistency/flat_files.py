@@ -647,3 +647,18 @@ def check_two_files_for_dups(f1,f2, i1,i2):
                 DUPS[key]=[i1,i2]
     del d1
     return DUPS
+    
+#@ray.remote
+def compare_file_against_provided_file_dict(d1,f2, i1,i2):
+    ''' '''
+
+    # Go through the lines in the second file and for any duplicates, ...
+    # ... add *both* integers to a dups dict
+    DUPS = {}
+    with open(f2,'r') as fh2:
+        for line in fh2:
+            key = line[15:56]
+            if key in d1 :
+                DUPS[key]=[i1,i2]
+    del d1
+    return DUPS
