@@ -189,7 +189,16 @@ def search_for_cross_designation_duplicates():
             d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
             
         # Compare the i-file against all other files in the "lst" list
-        list_of_dup_dicts_for_i = ray.get( [ff.compare_file_against_provided_file_dict.remote(d1, file_dict[i2], i,i2) for i2 in lst])
+        # NB Processing in chunks 
+        list_of_dup_dicts_for_i =  []
+        chunk = 200
+        for k in range(0,len(lst),chunk):
+            print(f'chunk...{k,len(lst),chunk}')
+            chunk_lst = lst[k:k+chunk]
+            list_of_dup_dicts_for_chunk = ray.get( [ff.compare_file_against_provided_file_dict.remote(d1, file_dict[i2], i,i2) for i2 in chunk_lst])
+            
+            # Combine all presented dictionaries into a single dictionary for chunk
+            list_of_dup_dicts_for_i.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk) )
         
         # Combine all presented dictionaries into a single dictionary
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_i))
