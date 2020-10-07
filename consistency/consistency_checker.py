@@ -165,10 +165,11 @@ def search_for_cross_designation_duplicates():
     # ------------ FILE READ --------------------
     # Read all of the observations in a parallel style-ee
     # - The returned list will be HUGE
-    list_of_dicts = ray.get([ ff.read_file_into_dict_keyed_on_obs80_bit.remote(f, n) for n,f in file_dict.items() ])
+    list_of_dicts = [ ff.read_file_into_dict_keyed_on_obs80_bit(f, n) for n,f in file_dict.items() ]
     
     # Get any duplicates by doing a pair-wise comparison between returned dicts
     DUPS = defaultdict(list)
+    print('Fiding duplicates')
     for i, di in enumerate(list_of_dicts):
         for j, dj in enumerate(list_of_dicts[i:]):
             # intersecn indicates duplicate obs80-bits
