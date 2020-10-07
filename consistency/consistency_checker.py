@@ -89,7 +89,6 @@ def search_for_cross_designation_duplicates():
     file_dict = { n:f for n,f in enumerate(files_)}
     num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
     
-    """
     # ---------------- UN-numbered FILES -----------
     files_.extend(glob.glob(f'/sa/mpu/*dat', recursive=True))
     files_.extend(glob.glob(f'/sa/mpu/*ADD', recursive=True))
@@ -103,9 +102,7 @@ def search_for_cross_designation_duplicates():
         for n,f in file_dict.items():
             fh.write(f'{n},{f},{num[n]}\n')
     print('created...', filepath)
-    """
     
-    print(f'len(file_dict)={len(file_dict)}')
     
     
     '''
@@ -161,7 +158,13 @@ def search_for_cross_designation_duplicates():
         
     del ALL
     '''
-    
+
+    # Get the list of pairs we need to check
+    pairs = [ (i,j) for i in range(len(file_dict)) for j in range(len(file_dict[i:])) ]
+    print(f'len(file_dict)={len(file_dict)}')
+    print(f'Need to check {len(pairs)} pairs to find duplicates...')
+    sys.exit()
+
     # ------------ FILE READ --------------------
     # Read all of the observations in a parallel style-ee
     # - The returned list will be HUGE
@@ -176,9 +179,6 @@ def search_for_cross_designation_duplicates():
     # Get any duplicates by doing a pair-wise comparison between returned dicts
     DUPS = defaultdict(list)
     
-    # Get the list of pairs we need to check
-    pairs = [ (i,j) for i in range(len(list_of_dicts)) for j in range(len(list_of_dicts[i:])) ]
-    print(f'Need to check {len(pairs)} pairs to find duplicates...')
     
     # Check each pair
     list_of_dups = ray.get( [get_dups.remote(list_of_dicts[_[0]],list_of_dicts[_[1]]) for _ in pairs] )
