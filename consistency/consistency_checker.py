@@ -190,7 +190,7 @@ def search_for_cross_designation_duplicates():
                     fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
         print('\t'*3,'created/updated:', filepath)
         
-@ray.remote()
+@ray.remot
 def get_dups(di,dj):
     printf(f'checking for duplicates...')
     DUPS = {}
