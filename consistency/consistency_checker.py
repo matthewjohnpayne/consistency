@@ -209,9 +209,10 @@ def check_two_files_for_dups(f1,f2, i1,i2):
 
     # Read first file into a dict
     with open(f1,'r') as fh1:
-        d1 = {line[15:56]:n for line in fh1 if line[14] not in ['s','v']}
+        d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
 
-    # Go through the lines in the second file and add *both* integers to a dups dict
+    # Go through the lines in the second file and for any duplicates, ...
+    # ... add *both* integers to a dups dict
     DUPS = {}
     with open(f2,'r') as fh2:
         for line in fh2:
