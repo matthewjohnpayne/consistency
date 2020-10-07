@@ -172,11 +172,8 @@ def search_for_cross_designation_duplicates():
     sys.exit()
 
     # ------------ FILE READ --------------------
-    def
-    
     
     # Read all of the observations in a parallel style-ee
-    # - The returned list will be HUGE
     list_of_dup_dicts = []
     chunk = 200
     for i in range(0,len(file_dict),chunk):
@@ -192,7 +189,8 @@ def search_for_cross_designation_duplicates():
     
         #
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk))
-                                  
+        sys.exit()
+        
     # Combine into a single dictionary
     DUPS = combine_list_dup_dicts(list_of_dup_dicts)
     
