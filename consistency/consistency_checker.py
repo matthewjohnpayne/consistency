@@ -192,7 +192,7 @@ def search_for_cross_designation_duplicates():
     
         # Combine all presented dictionaries into a single dictionary
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk))
-        print('-------',len(list_of_dup_dicts[0]))
+        print('\t-------',len(list_of_dup_dicts[0]))
         
     # Combine into a single dictionary
     DUPS = combine_list_dup_dicts(list_of_dup_dicts)
