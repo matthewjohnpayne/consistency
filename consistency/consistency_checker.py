@@ -176,11 +176,11 @@ def search_for_cross_designation_duplicates():
     list_of_dup_dicts = []
     chunk = 200
     for k in range(0,len(pairs),chunk):
+    
         # For clarity, define which pairs we will look at in this chunk
         # NB : These are just pairs of integers
         chunk_pairs = pairs[k:k+chunk]
         print(f'chunking ... i={i}, chunk={chunk}')
-        print(chunk_pairs)
         
         #Get a list (of length chunk=200), where each entry is a dictionary of duplicates
         # - NB(1) dicts can be empty.
@@ -192,10 +192,7 @@ def search_for_cross_designation_duplicates():
     
         # Combine all presented dictionaries into a single dictionary
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk))
-        for d in list_of_dup_dicts_for_chunk:
-            print(len(d))
         print('-------',len(list_of_dup_dicts[0]))
-        sys.exit()
         
     # Combine into a single dictionary
     DUPS = combine_list_dup_dicts(list_of_dup_dicts)
@@ -249,6 +246,7 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
 
     # Check the consistency of each design
     # (i) "ray" parallelization option
+    '''
     if True:
         results =  ray.get(
                         [    establish_internal_consistency_of_flat_files_for_single_desig.remote(  desig,
@@ -274,7 +272,7 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
                         for desig in desigs ]
                     
 
-
+    '''
 
 
 # ------------------------------------------------------------------------
