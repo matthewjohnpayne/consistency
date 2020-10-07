@@ -189,7 +189,7 @@ def search_for_cross_designation_duplicates():
             d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
             
         # Compare the i-file against all other files in the "lst" list
-        list_of_dup_dicts_for_i = [ff.compare_file_against_provided_file_dict(d1, file_dict[i2], i,i2) for i2 in lst]
+        list_of_dup_dicts_for_i = ray.get( [ff.compare_file_against_provided_file_dict.remote(d1, file_dict[i2], i,i2) for i2 in lst])
         
         # Combine all presented dictionaries into a single dictionary
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_i))
