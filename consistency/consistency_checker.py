@@ -160,9 +160,13 @@ def search_for_cross_designation_duplicates():
     '''
 
     # Get the list of pairs we need to check
-    pairs = [ (i,j) for i in range(len(file_dict)) for j in range(len(file_dict[i:])) ]
+    pairs = []
+    for i in range(len(file_dict)):
+        for j in range(i+1,len(file_dict))
+            pairs.append( (i,j) )
     print(f'len(file_dict)={len(file_dict)}')
     print(f'Need to check {len(pairs)} pairs to find duplicates...')
+    print(pairs)
     sys.exit()
 
     # ------------ FILE READ --------------------
