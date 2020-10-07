@@ -176,19 +176,25 @@ def search_for_cross_designation_duplicates():
     list_of_dup_dicts = []
     chunk = 200
     for k in range(0,len(pairs),chunk):
+        # For clarity, define which pairs we will look at in this chunk
+        # NB : These are just pairs of integers
         chunk_pairs = pairs[k:k+chunk]
         print(f'chunking ... i={i}, chunk={chunk}')
         print(chunk_pairs)
+        
         #Get a list (of length chunk=200), where each entry is a dictionary of duplicates
         # - NB(1) dicts can be empty.
         # - NB(2) Parallelized over chunk=200 CPUs
-        list_of_dup_dicts_for_chunk = [check_two_files_for_dups(    file_dict[p[0]],
-                                                                    file_dict[p[1]],
-                                                                    p[0],
-                                                                    p[1]) for p in chunk_pairs ]
+        list_of_dup_dicts_for_chunk = ray.get( [check_two_files_for_dups.remote(    file_dict[p[0]],
+                                                                                    file_dict[p[1]],
+                                                                                    p[0],
+                                                                                    p[1]) for p in chunk_pairs ] )
     
-        #
+        # Combine all presented dictionaries into a single dictionary
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk))
+        for d in list_of_dup_dicts_for_chunk:
+            print(len(d))
+        print('-------',len(list_of_dup_dicts[0]))
         sys.exit()
         
     # Combine into a single dictionary
