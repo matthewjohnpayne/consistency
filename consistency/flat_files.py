@@ -626,7 +626,7 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
    
    
    
-@ray.remote
+#@ray.remote
 def read_file_into_dict_keyed_on_obs80_bit(f, n):
     print(f'reading file {f}, n={n}')
     with open(f,'r') as fh:
