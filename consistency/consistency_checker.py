@@ -168,24 +168,24 @@ def search_for_cross_designation_duplicates():
     print(f'len(file_dict)={len(file_dict)}')
     print(f'Need to check {len(pairs)} pairs to find duplicates...')
     random.shuffle(pairs)
-    print(pairs[:100])
-    sys.exit()
+    print('\t e.g.', pairs[:10])
 
     # ------------ FILE READ --------------------
     
     # Read all of the observations in a parallel style-ee
     list_of_dup_dicts = []
     chunk = 200
-    for i in range(0,len(file_dict),chunk):
+    for k in range(0,len(pairs),chunk):
+        chunk_pairs = pairs[k:k+chunk]
         print(f'chunking ... i={i}, chunk={chunk}')
-        
+        print(chunk_pairs)
         #Get a list (of length chunk=200), where each entry is a dictionary of duplicates
         # - NB(1) dicts can be empty.
         # - NB(2) Parallelized over chunk=200 CPUs
-        list_of_dup_dicts_for_chunk = [check_two_files_for_dups(    file_dict[pairs[j][0]],
-                                                                    file_dict[pairs[j][1]],
-                                                                    pairs[j][0],
-                                                                    pairs[j][1]) for j in range(i,i+chunk) ]
+        list_of_dup_dicts_for_chunk = [check_two_files_for_dups(    file_dict[p[0]],
+                                                                    file_dict[p[1]],
+                                                                    p[0],
+                                                                    p[1]) for p in chunk_pairs ]
     
         #
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk))
