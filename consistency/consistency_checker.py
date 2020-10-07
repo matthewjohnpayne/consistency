@@ -171,16 +171,15 @@ def search_for_cross_designation_duplicates():
     DUPS = defaultdict(list)
     print('Finding duplicates')
     
+    # Get the list of pairs we need to check
     pairs = [ (i,j) for i in range(len(list_of_dicts)) for j in range(len(list_of_dicts[i:])) ]
-    print(f'len(pairs)={len(pairs)}')
-    print(pairs)
-    sys.exit()
-    # intersecn indicates duplicate obs80-bits
-    intersecn = di.keys() & dj.keys()
-    print(i,j,len(di), len(dj), len(intersecn))
-    for key in intersecn:
-        DUPS[key].append(di[key])
-        DUPS[key].append(dj[key])
+    
+    # Check each pair
+    list_of_dups = ray.get( [get_dups.remote(list_of_dicts[_[0]],list_of_dicts[_[1]]) for _ in pairs] )
+    print('Combining list_of_dups...')
+    for d in list_of_dups
+        for key, value in d.items():
+            DUPS[key].extend(value)
     
     if DUPS:
         # save the duplicates to file
@@ -191,7 +190,17 @@ def search_for_cross_designation_duplicates():
                     fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
         print('\t'*3,'created/updated:', filepath)
         
-
+@ray.remote()
+def get_dups(di,dj):
+    printf(f'checking for duplicates...')
+    DUPS = {}
+    # intersecn indicates duplicate obs80-bits
+    intersecn = di.keys() & dj.keys()
+    for key in intersecn:
+        DUPS[key].append(di[key])
+        DUPS[key].append(dj[key])
+    return DUPS
+    
 # ------------------------------------------------------------------------
 # FLAT-FILE-ONLY CHECKS 
 # ------------------------------------------------------------------------
