@@ -192,7 +192,7 @@ def search_for_cross_designation_duplicates():
         
 @ray.remote
 def get_dups(di,dj):
-    printf(f'checking for duplicates...')
+    print(f'checking for duplicates...')
     DUPS = {}
     # intersecn indicates duplicate obs80-bits
     intersecn = di.keys() & dj.keys()
