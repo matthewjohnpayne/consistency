@@ -86,7 +86,7 @@ def search_for_cross_designation_duplicates():
     files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
     
     # Save the num:file mapping, just in case ...
-    file_dict = { n:f for n,f in enumerate(files_)}
+    file_dict = { n:f for n,f in enumerate(files_[:10])}
     num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
     
     """
@@ -170,14 +170,16 @@ def search_for_cross_designation_duplicates():
     # Get any duplicates by doing a pair-wise comparison between returned dicts
     DUPS = defaultdict(list)
     print('Finding duplicates')
-    for i, di in enumerate(list_of_dicts):
-        for j, dj in enumerate(list_of_dicts[i+1:]):
-            # intersecn indicates duplicate obs80-bits
-            intersecn = di.keys() & dj.keys()
-            print(i,j,len(di), len(dj), len(intersecn))
-            for key in intersecn:
-                DUPS[key].append(di[key])
-                DUPS[key].append(dj[key])
+    
+    pairs = [ (i,j) for j in range(len(list_of_dicts[i+1:]) for i in range(len(list_of_dicts)) ]
+    print(f'len(pairs)={len(pairs)}')
+    sys.exit()
+    # intersecn indicates duplicate obs80-bits
+    intersecn = di.keys() & dj.keys()
+    print(i,j,len(di), len(dj), len(intersecn))
+    for key in intersecn:
+        DUPS[key].append(di[key])
+        DUPS[key].append(dj[key])
     
     if DUPS:
         # save the duplicates to file
