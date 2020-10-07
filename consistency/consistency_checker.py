@@ -171,7 +171,7 @@ def search_for_cross_designation_duplicates():
     DUPS = defaultdict(list)
     print('Finding duplicates')
     
-    pairs = [ (i,j) for j in range(len(list_of_dicts[i+1:]) for i in range(len(list_of_dicts)) ]
+    pairs = [ (i,j) for j in range(len(list_of_dicts[i+1:])) for i in range(len(list_of_dicts)) ]
     print(f'len(pairs)={len(pairs)}')
     sys.exit()
     # intersecn indicates duplicate obs80-bits
