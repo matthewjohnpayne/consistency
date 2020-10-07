@@ -167,7 +167,7 @@ def search_for_cross_designation_duplicates():
     # - The returned list will be HUGE
     list_of_dicts = []
     chunk = 200
-    for i in range(0,len(list_of_dicts),chunk):
+    for i in range(0,len(file_dict),chunk):
         print(f'chunking ... i={i}, chunk={chunk}')
         list_of_dicts.extend(
             ray.get([ ff.read_file_into_dict_keyed_on_obs80_bit.remote(file_dict[n], n) for n in range(i,i+chunk) ])
