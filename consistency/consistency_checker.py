@@ -177,7 +177,7 @@ def search_for_cross_designation_duplicates():
     # Check each pair
     list_of_dups = ray.get( [get_dups.remote(list_of_dicts[_[0]],list_of_dicts[_[1]]) for _ in pairs] )
     print('Combining list_of_dups...')
-    for d in list_of_dups
+    for d in list_of_dups:
         for key, value in d.items():
             DUPS[key].extend(value)
     
