@@ -180,7 +180,7 @@ def search_for_cross_designation_duplicates():
         # For clarity, define which pairs we will look at in this chunk
         # NB : These are just pairs of integers
         chunk_pairs = pairs[k:k+chunk]
-        print(f'chunking ... i={i}, chunk={chunk}')
+        print(f'chunking ... k={k}/{len(pairs)}, chunk={chunk}')
         
         #Get a list (of length chunk=200), where each entry is a dictionary of duplicates
         # - NB(1) dicts can be empty.
