@@ -206,7 +206,8 @@ def search_for_cross_designation_duplicates():
 #@ray.remote
 def check_two_files_for_dups(f1,f2, i1,i2):
     ''' '''
-
+    print(f'check_two_files_for_dups:{f1,f2, i1,i2}')
+    
     # Read first file into a dict
     with open(f1,'r') as fh1:
         d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
