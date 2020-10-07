@@ -86,7 +86,7 @@ def search_for_cross_designation_duplicates():
     files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
     
     # Save the num:file mapping, just in case ...
-    file_dict = { n:f for n,f in enumerate(files_[:10])}
+    file_dict = { n:f for n,f in enumerate(files_)}
     num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
     
     """
