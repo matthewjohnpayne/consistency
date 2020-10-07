@@ -165,15 +165,19 @@ def search_for_cross_designation_duplicates():
     # ------------ FILE READ --------------------
     # Read all of the observations in a parallel style-ee
     # - The returned list will be HUGE
-    list_of_dicts = ray.get([ ff.read_file_into_dict_keyed_on_obs80_bit.remote(f, n) for n,f in file_dict.items() ])
+    list_of_dicts = []
+    chunk = 200
+    for i in range(0,len(list_of_dicts),chunk):
+        print(f'chunking ... i={i}, chunk={chunk}')
+        chunk_list = ray.get([ ff.read_file_into_dict_keyed_on_obs80_bit.remote(file_dict[n], n) for n in range(i,i+chunk) ])
     
     # Get any duplicates by doing a pair-wise comparison between returned dicts
     DUPS = defaultdict(list)
-    print('Finding duplicates')
     
     # Get the list of pairs we need to check
     pairs = [ (i,j) for i in range(len(list_of_dicts)) for j in range(len(list_of_dicts[i:])) ]
-    print(f'Need to check {len(pairs)} pairs...')
+    print(f'Need to check {len(pairs)} pairs to find duplicates...')
+    
     # Check each pair
     list_of_dups = ray.get( [get_dups.remote(list_of_dicts[_[0]],list_of_dicts[_[1]]) for _ in pairs] )
     print('Combining list_of_dups...')
