@@ -171,7 +171,7 @@ def search_for_cross_designation_duplicates():
     DUPS = defaultdict(list)
     print('Finding duplicates')
     
-    pairs = [ (i,j) for i in range(len(list_of_dict)) for j in range(len(list_of_dicts[i:])) ]
+    pairs = [ (i,j) for i in range(len(list_of_dicts)) for j in range(len(list_of_dicts[i:])) ]
     print(f'len(pairs)={len(pairs)}')
     print(pairs)
     sys.exit()
