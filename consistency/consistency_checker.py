@@ -185,7 +185,7 @@ def search_for_cross_designation_duplicates():
         #Get a list (of length chunk=200), where each entry is a dictionary of duplicates
         # - NB(1) dicts can be empty.
         # - NB(2) Parallelized over chunk=200 CPUs
-        list_of_dup_dicts_for_chunk = ray.get( [check_two_files_for_dups.remote(    file_dict[p[0]],
+        list_of_dup_dicts_for_chunk = ray.get( [ff.check_two_files_for_dups.remote(    file_dict[p[0]],
                                                                                     file_dict[p[1]],
                                                                                     p[0],
                                                                                     p[1]) for p in chunk_pairs ] )
@@ -209,25 +209,7 @@ def search_for_cross_designation_duplicates():
                 for i,n in enumerate(lst):
                     fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
         
-@ray.remote
-def check_two_files_for_dups(f1,f2, i1,i2):
-    ''' '''
-    print(f'check_two_files_for_dups:{f1,f2, i1,i2}')
-    
-    # Read first file into a dict
-    with open(f1,'r') as fh1:
-        d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
 
-    # Go through the lines in the second file and for any duplicates, ...
-    # ... add *both* integers to a dups dict
-    DUPS = {}
-    with open(f2,'r') as fh2:
-        for line in fh2:
-            key = line[15:56]
-            if key in d1 :
-                DUPS[key]=[i1,i2]
-    del d1
-    return DUPS
     
 def combine_list_dup_dicts(list_of_dup_dicts):
     # Combine all presented dictionaries into a single dictionary

@@ -624,5 +624,26 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
     # ... between now and when I lock the file 
     return list(set(src_files))
    
-   
-   
+
+# ------------------------------------------------------------------------
+# RAY PARALLELIZATION (FOR CROSS-DESIGNATION DUPLICATION CHECKS)
+# ------------------------------------------------------------------------
+@ray.remote
+def check_two_files_for_dups(f1,f2, i1,i2):
+    ''' '''
+    print(f'check_two_files_for_dups:{f1,f2, i1,i2}')
+    
+    # Read first file into a dict
+    with open(f1,'r') as fh1:
+        d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
+
+    # Go through the lines in the second file and for any duplicates, ...
+    # ... add *both* integers to a dups dict
+    DUPS = {}
+    with open(f2,'r') as fh2:
+        for line in fh2:
+            key = line[15:56]
+            if key in d1 :
+                DUPS[key]=[i1,i2]
+    del d1
+    return DUPS
