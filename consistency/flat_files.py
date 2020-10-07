@@ -626,11 +626,3 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
    
    
    
-@ray.remote
-def read_file_into_dict_keyed_on_obs80_bit(f, n):
-    print(f'reading file {f}, n={n}')
-    with open(f,'r') as fh:
-        # local dict maps obs80-bit to integer representing file
-        # NB: ignoring second-line obs, because those are the same for many many detections in the same exposure
-        return {line[15:56]:n for line in fh if line[14] not in ['s','v']}
-

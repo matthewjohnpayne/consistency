@@ -34,6 +34,7 @@ import healpy as hp
 import glob
 import re
 import shutil
+import random
 import copy
 
 # ------------------------------------------------------------------------
@@ -166,50 +167,72 @@ def search_for_cross_designation_duplicates():
             pairs.append( (i,j) )
     print(f'len(file_dict)={len(file_dict)}')
     print(f'Need to check {len(pairs)} pairs to find duplicates...')
-    print(pairs)
+    random.shuffle(pairs)
+    print(pairs[:100])
     sys.exit()
 
     # ------------ FILE READ --------------------
+    def
+    
+    
     # Read all of the observations in a parallel style-ee
     # - The returned list will be HUGE
-    list_of_dicts = []
+    list_of_dup_dicts = []
     chunk = 200
     for i in range(0,len(file_dict),chunk):
         print(f'chunking ... i={i}, chunk={chunk}')
-        list_of_dicts.extend(
-            ray.get([ ff.read_file_into_dict_keyed_on_obs80_bit.remote(file_dict[n], n) for n in range(i,i+chunk) ])
-            )
+        
+        #Get a list (of length chunk=200), where each entry is a dictionary of duplicates
+        # - NB(1) dicts can be empty.
+        # - NB(2) Parallelized over chunk=200 CPUs
+        list_of_dup_dicts_for_chunk = [check_two_files_for_dups(    file_dict[pairs[j][0]],
+                                                                    file_dict[pairs[j][1]],
+                                                                    pairs[j][0],
+                                                                    pairs[j][1]) for j in range(i,i+chunk) ]
     
-    # Get any duplicates by doing a pair-wise comparison between returned dicts
-    DUPS = defaultdict(list)
+        #
+        list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk))
+                                  
+    # Combine into a single dictionary
+    DUPS = combine_list_dup_dicts(list_of_dup_dicts)
     
-    
-    # Check each pair
-    list_of_dups = ray.get( [get_dups.remote(list_of_dicts[_[0]],list_of_dicts[_[1]]) for _ in pairs] )
-    print('Combining list_of_dups...')
-    for d in list_of_dups:
-        for key, value in d.items():
-            DUPS[key].extend(value)
-    
+    # Save the duplicates to file
     if DUPS:
-        # save the duplicates to file
+        print('\t'*3,'creating:', filepath)
         filepath=os.path.join(save_dir,'duplicates.txt')
         with open( filepath,'w') as fh:
             for obs80bit, lst in DUPS.items():
                 for i,n in enumerate(lst):
                     fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
-        print('\t'*3,'created/updated:', filepath)
         
-@ray.remote
-def get_dups(di,dj):
-    print(f'checking for duplicates...')
-    DUPS = defaultdict(list)
-    # intersecn indicates duplicate obs80-bits
-    intersecn = di.keys() & dj.keys()
-    for key in intersecn:
-        DUPS[key].append(di[key])
-        DUPS[key].append(dj[key])
+#@ray.remote
+def check_two_files_for_dups(f1,f2, i1,i2):
+    ''' '''
+
+    # Read first file into a dict
+    with open(f1,'r') as fh1:
+        d1 = {line[15:56]:n for line in fh1 if line[14] not in ['s','v']}
+
+    # Go through the lines in the second file and add *both* integers to a dups dict
+    DUPS = {}
+    with open(f2,'r') as fh2:
+        for line in fh2:
+            key = line[15:56]
+            if key in d1 :
+                DUPS[key]=[i1,i2]
+    del d1
     return DUPS
+    
+def combine_list_dup_dicts(list_of_dup_dicts):
+    # Combine all presented dictionaries into a single dictionary
+    DUPS = defaultdict(list)
+    for d in list_of_dup_dicts:
+        for k,v in d.items():
+            DUPS[k].extend(v) # <<-- v will always be a list
+            
+    # Ensure we don't have duplicates in DUPS
+    return {k:list(set(v)) for k,v in DUPS.items()}
+
     
 # ------------------------------------------------------------------------
 # FLAT-FILE-ONLY CHECKS 
