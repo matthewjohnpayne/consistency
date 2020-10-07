@@ -174,7 +174,7 @@ def search_for_cross_designation_duplicates():
         for j, dj in enumerate(list_of_dicts[i:]):
             # intersecn indicates duplicate obs80-bits
             intersecn = di.keys() & dj.keys()
-            print(i,j,len(di), len(dj), len(intersection))
+            print(i,j,len(di), len(dj), len(intersecn))
             for key in intersecn:
                 DUPS[key].append(di[key])
                 DUPS[key].append(dj[key])
