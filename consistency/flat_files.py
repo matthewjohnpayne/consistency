@@ -624,95 +624,12 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
     # ... between now and when I lock the file 
     return list(set(src_files))
    
-def search_for_cross_designation_duplicates():
-    '''
-    There's a possibility that the same observation has
-    been published against multiple object-designations
-    Let's check for that
-    
-    NB I am not explicitly checking for duplicates WITHIN files here:
-     - I am assuming I do that elsewhere ...
-    '''
-    print('search_for_cross_designation_duplicates')
-    
-    # We want to 'permanently' save some output files ...
-    save_dir = '/sa/conchecks/data_products/'
+   
+   
+@ray.remote
+def read_file_into_dict_keyed_on_obs80_bit(f, n):
+    with open(f,'r') as fh:
+        # local dict maps obs80-bit to integer representing file
+        # NB: ignoring second-line obs, because those are the same for many many detections in the same exposure
+        return {line[15:56]:n for line in fh if line[14] not in ['s','v']}
 
-    # ------------ NUMBERED FILES ------------------
-    # Primary, published files
-    files_ = glob.glob(f'/sa/mpn/N*dat', recursive=True)
-    files_.extend(glob.glob(f'/sa/mpn/N*ADD', recursive=True))
-    
-    # In-progress ( between monthly pubs) files are in different location ...
-    files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
-    
-    # Save the num:file mapping, just in case ...
-    file_dict = { n:f for n,f in enumerate(files_)}
-    num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
-    
-    # ---------------- UN-numbered FILES -----------
-    files_.extend(glob.glob(f'/sa/mpu/*dat', recursive=True))
-    files_.extend(glob.glob(f'/sa/mpu/*ADD', recursive=True))
-    
-    file_dict = { n:f for n,f in enumerate(files_)}
-    num       = { n:True if n in num else False for n,f in file_dict.items()}
-
-    # ---------------- File-Mapping -----------
-    filepath = os.path.join(save_dir,'file_num_mapping.txt')
-    with open( filepath,'w') as fh:
-        for n,f in file_dict.items():
-            fh.write(f'{n},{f},{num[n]}\n')
-    print('created...', filepath)
-    
-    
-    # ---------------- Big data read ----------
-    # Read the data into a single, massive dictionary
-    # This is going to be challenging
-    ALL = {}
-    DUP = defaultdict(list)
-    for n,f in file_dict.items():
-        print(n,f)
-        
-        with open(f,'r') as fh:
-            # local dict maps obs80-bit to integer representing file
-            # NB: ignoring second-line obs
-            local     = {line[15:56]:n for line in fh if line[14] not in ['s','v']}
-            
-        # intersecn indicates duplicate obs80-bits
-        intersecn = local.keys() & ALL.keys()
-        
-        # store duplicates with list of file-integers
-        for k in intersecn:
-            DUP[k].append(local[k])
-            if isinstance(ALL[k], int):
-                DUP[k].append(ALL[k])
-            else:
-                DUP[k].extend(ALL[k])
-
-        # update the overall dictionary with local data
-        ALL.update(local)
-        
-        # update the overall dictionary with the duplicates
-        ALL.update(DUP)
-        print('\t',len(ALL), len(DUP))
-
-        # do a sanity print-out of the last input obs80bit
-        lastkey = list(local.keys())[-1]
-        print('\t'*2,' ...last key:value',lastkey, ALL[lastkey])
-        
-        del local
-        del intersecn
-        
-        # Because I am impatient, I will print out the entire dict any time there is content ...
-        if DUP:
-            # save the duplicates to file
-            filepath=os.path.join(save_dir,'duplicates.txt')
-            with open( filepath,'w') as fh:
-                for obs80bit, lst in DUP.items():
-                    for i,n in enumerate(lst):
-                        fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
-            print('\t'*3,'created/updated:', filepath)
-
-        
-    del ALL
-    
