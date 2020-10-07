@@ -209,7 +209,7 @@ def search_for_cross_designation_duplicates():
                 for i,n in enumerate(lst):
                     fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
         
-#@ray.remote
+@ray.remote
 def check_two_files_for_dups(f1,f2, i1,i2):
     ''' '''
     print(f'check_two_files_for_dups:{f1,f2, i1,i2}')
