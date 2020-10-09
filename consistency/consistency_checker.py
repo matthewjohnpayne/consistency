@@ -121,7 +121,7 @@ def search_for_cross_designation_duplicates():
             return {line[15:56]:True for line in fh if line[14] not in ['s','v']}
 
 
-    list_of_dicts = [ read_into_bit_dict(f) for f in list(file_dict.values())[:10] ]
+    list_of_dicts = [ read_into_bit_dict(f) for f in list(file_dict.values())[:100] ]
     #db.from_sequence(list(file_dict.values())[:10]).map(read_into_bit_dict)
     #list_of_dicts = dask.compute(*list_of_dicts)
     print('...', len(list_of_dicts), type(list_of_dicts), [type(_) for _ in list_of_dicts], time.time()-start )
