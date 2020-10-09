@@ -115,16 +115,15 @@ def search_for_cross_designation_duplicates():
     print('reading ...')
     start = time.time()
 
+    
     def read_into_bit_dict(f):
         with open(f,'r') as fh:
             return {line[15:56]:True for line in fh if line[14] not in ['s','v']}
 
-    b = db.read_text( list(file_dict.values())[:10] ).compute()
-    print( type(b), len(b) )
 
-    #list_of_dicts = [ read_into_bit_dict(f) for f in list(file_dict.values()) ]
+    list_of_dicts = [ read_into_bit_dict(f) for f in list(file_dict.values())[:10] ]
         
-    #print('...', len(list_of_dicts), time.time()-start )
+    print('...', len(list_of_dicts), time.time()-start )
     sys.exit()
     list_of_dup_dicts = []
     for i,di in enumerate(list_of_dicts):
