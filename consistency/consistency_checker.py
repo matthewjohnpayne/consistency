@@ -197,7 +197,7 @@ def search_for_cross_designation_duplicates():
         for k in range(0,len(lst),chunk):
             print(f'chunk...{k,len(lst),chunk}')
             chunk_lst = lst[k:k+chunk]
-            list_of_dup_dicts_for_chunk =  [ff.compare_file_against_provided_file_dict(d1, file_dict[i2], i,i2) for i2 in chunk_lst]
+            list_of_dup_dicts_for_chunk =  dask.compute([ff.compare_file_against_provided_file_dict(d1, file_dict[i2], i,i2) for i2 in chunk_lst])
             
             # Combine all presented dictionaries into a single dictionary for chunk
             list_of_dup_dicts_for_i.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk) )
