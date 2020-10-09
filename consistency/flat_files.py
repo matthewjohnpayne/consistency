@@ -42,7 +42,7 @@ import obs80 as o80
 # ------------------------------------------------------------------------
 # HIGH-LEVEL CONSISTENCY CHECKING FUNCTIONS
 # ------------------------------------------------------------------------
-@ray.remote
+@dask.delayed
 def establish_internal_consistency_of_flat_files_for_single_desig( desig, proc_dir, cnx=None, DEBUG = True ):
     '''
     '''
