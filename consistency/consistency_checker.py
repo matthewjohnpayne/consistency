@@ -202,7 +202,7 @@ def search_for_cross_designation_duplicates():
             # Combine all presented dictionaries into a single dictionary for chunk
             list_of_dup_dicts_for_i.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk) )
         
-            sys.exit('End of chunk')
+            sys.exit('End of chunk: len(list_of_dup_dicts_for_i[-1])={len(list_of_dup_dicts_for_i[-1])}')
         
         # Combine all presented dictionaries into a single dictionary
         list_of_dup_dicts.append( combine_list_dup_dicts(list_of_dup_dicts_for_i))
