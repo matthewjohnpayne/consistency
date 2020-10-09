@@ -36,6 +36,8 @@ import re
 import shutil
 import random
 import copy
+from collections import Mapping, Container
+from sys import getsizeof
 
 # ------------------------------------------------------------------------
 # RAY/DASK PARALLELIZATION
@@ -64,7 +66,7 @@ import flat_files as ff
 # ------------------------------------------------------------------------
 # CROSS DESIGNATION DUPLICATES...
 # ------------------------------------------------------------------------
-   
+    
 def search_for_cross_designation_duplicates():
     '''
     There's a possibility that the same observation has
@@ -107,7 +109,14 @@ def search_for_cross_designation_duplicates():
     print('created...', filepath)
     
     
-    
+    # ---------------- Big data read ----------
+    print('reading ...')
+    list_of_dicts = []
+    for f in file_dict:
+        with open(f,'r') as fh:
+            list_of_dicts.append( {line[15:56]:True for line in fh1 if line[14] not in ['s','v']} )
+    print('...', len(list_of_dicts))
+
     '''
     # ---------------- Big data read ----------
     # Read the data into a single, massive dictionary
