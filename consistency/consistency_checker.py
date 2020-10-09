@@ -44,7 +44,7 @@ import copy
 #ray.init('auto')
 import dask
 from distributed import Client
-
+client = Client('tcp://131.142.192.121:8786')
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS

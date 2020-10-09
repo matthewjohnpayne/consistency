@@ -22,9 +22,11 @@ import copy
 from functools import lru_cache
 
 # ------------------------------------------------------------------------
-# RAY PARALLELIZATION
+# RAY/DASK PARALLELIZATION
 # ------------------------------------------------------------------------
-import ray
+#import ray
+import dask
+from distributed import Client
 
 # ------------------------------------------------------------------------
 # MPC IMPORTS
