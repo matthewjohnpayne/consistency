@@ -650,7 +650,7 @@ def check_two_files_for_dups(f1,f2, i1,i2):
     del d1
     return DUPS
     
-@dask.delayed
+#@dask.delayed
 def compare_file_against_provided_file_dict(d1,f2, i1,i2):
     ''' '''
     print(f'compare_file_against_provided_file_dict:{f2, i1,i2}')
