@@ -39,6 +39,7 @@ import copy
 from collections import Mapping, Container
 from sys import getsizeof
 
+
 # ------------------------------------------------------------------------
 # RAY/DASK PARALLELIZATION
 # ------------------------------------------------------------------------
@@ -46,6 +47,7 @@ from sys import getsizeof
 #ray.init('auto')
 import dask
 from distributed import Client
+import dask.bag as db
 client = Client('tcp://131.142.192.121:8786')
 
 # ------------------------------------------------------------------------
@@ -112,11 +114,17 @@ def search_for_cross_designation_duplicates():
     # ---------------- Big data read ----------
     print('reading ...')
     start = time.time()
-    list_of_dicts = []
-    for f in list(file_dict.values()):
+
+    def read_into_bit_dict(f):
         with open(f,'r') as fh:
-            list_of_dicts.append( {line[15:56]:True for line in fh if line[14] not in ['s','v']} )
-    print('...', len(list_of_dicts), time.time()-start )
+            return {line[15:56]:True for line in fh if line[14] not in ['s','v']}
+
+    b = db.read_text( list(file_dict.values())[:10] )
+    print( type(b), len(b) )
+
+    #list_of_dicts = [ read_into_bit_dict(f) for f in list(file_dict.values()) ]
+        
+    #print('...', len(list_of_dicts), time.time()-start )
     sys.exit()
     list_of_dup_dicts = []
     for i,di in enumerate(list_of_dicts):
