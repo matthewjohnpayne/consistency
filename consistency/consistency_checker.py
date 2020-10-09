@@ -111,11 +111,12 @@ def search_for_cross_designation_duplicates():
     
     # ---------------- Big data read ----------
     print('reading ...')
+    start = time.time()
     list_of_dicts = []
     for f in list(file_dict.values())[:10]:
         with open(f,'r') as fh:
             list_of_dicts.append( {line[15:56]:True for line in fh if line[14] not in ['s','v']} )
-    print('...', len(list_of_dicts))
+    print('...', len(list_of_dicts), time.time()-start )
     
     list_of_dup_dicts = []
     for i,di in enumerate(list_of_dicts):
