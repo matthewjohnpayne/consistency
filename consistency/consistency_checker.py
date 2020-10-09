@@ -38,10 +38,12 @@ import random
 import copy
 
 # ------------------------------------------------------------------------
-# RAY PARALLELIZATION
+# RAY/DASK PARALLELIZATION
 # ------------------------------------------------------------------------
-import ray
-ray.init('auto')
+#import ray
+#ray.init('auto')
+import dask
+from distributed import Client
 
 
 # ------------------------------------------------------------------------
@@ -189,13 +191,13 @@ def search_for_cross_designation_duplicates():
             d1 = {line[15:56]:True for line in fh1 if line[14] not in ['s','v']}
             
         # Compare the i-file against all other files in the "lst" list
-        # NB Processing in chunks 
+        # NB Processing in chunks
         list_of_dup_dicts_for_i =  []
         chunk = 200
         for k in range(0,len(lst),chunk):
             print(f'chunk...{k,len(lst),chunk}')
             chunk_lst = lst[k:k+chunk]
-            list_of_dup_dicts_for_chunk = ray.get( [ff.compare_file_against_provided_file_dict.remote(d1, file_dict[i2], i,i2) for i2 in chunk_lst])
+            list_of_dup_dicts_for_chunk = dask.compute( [ff.compare_file_against_provided_file_dict.remote(d1, file_dict[i2], i,i2) for i2 in chunk_lst])
             
             # Combine all presented dictionaries into a single dictionary for chunk
             list_of_dup_dicts_for_i.append( combine_list_dup_dicts(list_of_dup_dicts_for_chunk) )
@@ -219,7 +221,7 @@ def search_for_cross_designation_duplicates():
         #Get a list (of length chunk=200), where each entry is a dictionary of duplicates
         # - NB(1) dicts can be empty.
         # - NB(2) Parallelized over chunk=200 CPUs
-        list_of_dup_dicts_for_chunk = ray.get( [ff.check_two_files_for_dups.remote(    file_dict[p[0]],
+        list_of_dup_dicts_for_chunk = dask.compute( [ff.check_two_files_for_dups.remote(    file_dict[p[0]],
                                                                                     file_dict[p[1]],
                                                                                     p[0],
                                                                                     p[1]) for p in chunk_pairs ] )
@@ -283,7 +285,7 @@ def check_flat_file_internal_consistency( n0,n1, DEBUG = True ):
     # (i) "ray" parallelization option
     '''
     if True:
-        results =  ray.get(
+        results =  dask.compute(
                         [    establish_internal_consistency_of_flat_files_for_single_desig.remote(  desig,
                                                                                                     proc_dir,
                                                                                                     cnx=None,

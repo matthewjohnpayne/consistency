@@ -628,7 +628,7 @@ def find_primary_data_file( desig, incorrect_published_obs80 ):
 # ------------------------------------------------------------------------
 # RAY PARALLELIZATION (FOR CROSS-DESIGNATION DUPLICATION CHECKS)
 # ------------------------------------------------------------------------
-@ray.remote
+@dask.delayed
 def check_two_files_for_dups(f1,f2, i1,i2):
     ''' '''
     print(f'check_two_files_for_dups:{f1,f2, i1,i2}')
@@ -648,7 +648,7 @@ def check_two_files_for_dups(f1,f2, i1,i2):
     del d1
     return DUPS
     
-@ray.remote
+@dask.delayed
 def compare_file_against_provided_file_dict(d1,f2, i1,i2):
     ''' '''
     print(f'compare_file_against_provided_file_dict:{f2, i1,i2}')
