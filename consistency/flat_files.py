@@ -665,3 +665,13 @@ def compare_file_against_provided_file_dict(d1,f2, i1,i2):
                 DUPS[key]=[i1,i2]
     del d1
     return DUPS
+
+#@dask.delayed
+def compare_two_dicts_for_dups(d1,d2, i1,i2):
+    ''' '''
+    print(f'compare_two_dicts_for_dups:{i1,i2}')
+
+    # intersecn indicates duplicate obs80-bits
+    intersecn = d1.keys() & d2.keys()
+
+    return {k:[i1,i2] for k in intersecn}

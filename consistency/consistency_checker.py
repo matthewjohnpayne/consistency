@@ -116,7 +116,12 @@ def search_for_cross_designation_duplicates():
         with open(f,'r') as fh:
             list_of_dicts.append( {line[15:56]:True for line in fh if line[14] not in ['s','v']} )
     print('...', len(list_of_dicts))
-
+    
+    
+    for i,di in enumerate(list_of_dicts):
+        for j, dj in enumerate(list_of_dicts[i+1:]):
+            ff.compare_two_dicts_for_dups(di,dj, i,j):
+    sys.exit()
     '''
     # ---------------- Big data read ----------
     # Read the data into a single, massive dictionary
@@ -183,10 +188,7 @@ def search_for_cross_designation_duplicates():
     print('\t e.g.', pairs[:10])
     """
     
-    # For each file, get the list of other files agsinst which it must be checked
-    # NB "triangular", so don't repeat pair-wise comparisons.
-    list_of_lists = [ (i,list(range(i+1,len(file_dict)))) for i in range(len(file_dict)) ]
-
+    
     # ------------ FILE READ --------------------
     
     # Read all of the observations in a parallel style-ee
