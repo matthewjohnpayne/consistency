@@ -121,7 +121,7 @@ def search_for_cross_designation_duplicates():
     for i,di in enumerate(list_of_dicts):
         for j, dj in enumerate(list_of_dicts[i+1:]):
             list_of_dup_dicts.append( ff.compare_two_dicts_for_dups(di,dj, i,j) )
-            print(\t,len(list_of_dup_dicts[-1]))
+            print('\t',len(list_of_dup_dicts[-1]))
     sys.exit()
     '''
     # ---------------- Big data read ----------
