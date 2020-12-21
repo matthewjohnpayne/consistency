@@ -72,8 +72,11 @@ import flat_files as ff
 def search_for_cross_designation_duplicates():
     '''
     There's a possibility that the same observation has
-    been published against multiple object-designations
-    Let's check for that
+    been published against multiple object-designations.
+     - I.e. the same observation may appear in multiple flat-files
+     - That is bad
+    Let's check for duplicate observations appearing in different files
+     - Numbered & Unnumbered
     
     NB I am not explicitly checking for duplicates WITHIN files here:
      - I am assuming I do that elsewhere ...
@@ -87,19 +90,26 @@ def search_for_cross_designation_duplicates():
     # Primary, published files
     files_ = glob.glob(f'/sa/mpn/N*dat', recursive=True)
     
-    files_.extend(glob.glob(f'/sa/mpn/N*ADD', recursive=True))
+    # These .ADD files are the things that are added-in during
+    # the last monthly pubn process
+    # - MJP: We may want to COMMENT-OUT THIS as they are obviously going to be duplicates ...
+    #files_.extend(glob.glob(f'/sa/mpn/N*ADD', recursive=True))
     
     # In-progress ( between monthly pubs) files are in different location ...
+    # E.g. "tot.num", "pending.num", ..., ...
     files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
     
-    # Save the num:file mapping, just in case ...
+    # Save a num:file mapping, just in case ...
     file_dict = { n:f for n,f in enumerate(files_)}
     num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
     
     # ---------------- UN-numbered FILES -----------
     files_.extend(glob.glob(f'/sa/mpu/*dat', recursive=True))
-    files_.extend(glob.glob(f'/sa/mpu/*ADD', recursive=True))
+    #files_.extend(glob.glob(f'/sa/mpu/*ADD', recursive=True))
     
+    # *** WHY IS THERE NO "/sa/obs/*unn"??? ***
+    #files_.extend( glob.glob(f'/sa/obs/*unn', recursive=True) )
+
     file_dict = { n:f for n,f in enumerate(files_)}
     num       = { n:True if n in num else False for n,f in file_dict.items()}
 
