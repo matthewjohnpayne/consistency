@@ -80,8 +80,9 @@ class CrossDesignationDuplicates():
         # We want to 'permanently' save some output files ...
         save_dir = newsub.generate_subdirectory( 'obs_cons' )
         print(f'CrossDesignationDuplicates saving into {save_dir}')
-        map_file = filepath=os.path.join(save_dir , 'mapping.txt')
-        dup_file = filepath=os.path.join(save_dir , 'duplicates.txt')
+        
+        self.map_file = filepath=os.path.join(save_dir , 'mapping.txt')
+        self.dup_file = filepath=os.path.join(save_dir , 'duplicates.txt')
 
 
     def find(self, METHOD='ALL'):
