@@ -79,7 +79,11 @@ class CrossDesignationDuplicates():
     def __init__(self, ):
     
         # We want to 'permanently' save some output files ...
-        save_dir = '/sa/conchecks/data_products/'
+        save_dir = newsub.generate_subdirectory( 'obs_cons' )
+        print(f'CrossDesignationDuplicates saving into {save_dir}')
+        map_file = filepath=os.path.join(save_dir , 'mapping.txt')
+        dup_file = filepath=os.path.join(save_dir , 'duplicates.txt')
+
 
     def find(self, METHOD='ALL'):
         '''
@@ -92,11 +96,12 @@ class CrossDesignationDuplicates():
         
         # ------- SEARCH FOR DUPLICATES -----------
         
-        # (1) In this approach we read all files into memory
+        # (1) In this approach we read all files into memory at once
         if METHOD == 'ALL':
             duplicate_dict = self._read_all()
         
         # (2) Alternatively, try to split the files up so that I don't have to read them all at once
+        # - Nothing working yet
         elif METHOD == 'SPLIT':
             pass
             #duplicate_dict = self._read_split()
@@ -118,12 +123,11 @@ class CrossDesignationDuplicates():
         
     def save(self, duplicate_dict):
         ''' save any duplicates to file '''
-        filepath=os.path.join(self.save_dir,'duplicates.txt')
-        with open( filepath,'w') as fh:
+        with open( self.dup_file, 'w') as fh:
             for obs80bit, lst in DUP.items():
                 for i,n in enumerate(lst):
                     fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
-        print('\t'*3,'created/updated:', filepath)
+        print('\t'*3,'created/updated:', self.dup_file)
 
 
         
@@ -149,11 +153,10 @@ class CrossDesignationDuplicates():
         # ---------------- File-Mapping -----------
         file_dict = { n:f for n,f in enumerate(files_)}
         num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
-        filepath = os.path.join(save_dir,'file_num_mapping.txt')
-        with open( filepath,'w') as fh:
+        with open( self.map_file,'w') as fh:
             for n,f in file_dict.items():
                 fh.write(f'{n},{f},{num[n]}\n')
-        print('created...', filepath)
+        print('created...', self.map_file )
         
         return file_dict
     
@@ -168,7 +171,7 @@ class CrossDesignationDuplicates():
         
         # Loop through all of the files ...
         for n,f in file_dict.items():
-            print(n,f)
+            print(n,f, len(file_dict))
             
             # Read the file contents into a "local" dictionary
             with open(f,'r') as fh:
@@ -197,6 +200,7 @@ class CrossDesignationDuplicates():
             # do a sanity print-out of the last input obs80bit
             lastkey = list(local.keys())[-1]
             print('\t'*2,' ...last key:value',lastkey, ALL[lastkey])
+                local     = {line[15:56]:n for line in fh if line[14] not in ['s','v']}
             
             del local
             del intersecn
