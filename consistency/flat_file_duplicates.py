@@ -198,11 +198,11 @@ class CrossDesignationDuplicates():
             
             # update the overall dictionary with the duplicates
             ALL.update(DUP)
-            print(f'\t N_All= len(ALL), N_Dup= len(DUP)')
+            print(f'\t N_All= {len(ALL)}, N_Dup= {len(DUP)}')
 
             # do a sanity print-out of the last input obs80bit
             lastkey = list(local.keys())[-1]
-            print('\t'*2,' ...last key:value',lastkey, ' : ', ALL[lastkey])
+            print(f'\t\t lastkey={lastkey}, ALL[lastkey]={ALL[lastkey]})
             
             del local
             del intersecn
