@@ -174,7 +174,7 @@ class CrossDesignationDuplicates():
         
         # Loop through all of the files ...
         for n,f in file_dict.items():
-            print(n,f, len(file_dict))
+            print(f'{n}/{len(file_dict)} : {f}')
             
             # Read the file contents into a "local" dictionary
             with open(f,'r') as fh:
@@ -198,11 +198,11 @@ class CrossDesignationDuplicates():
             
             # update the overall dictionary with the duplicates
             ALL.update(DUP)
-            print('\t',len(ALL), len(DUP))
+            print(f'\t N_All= len(ALL), N_Dup= len(DUP))
 
             # do a sanity print-out of the last input obs80bit
             lastkey = list(local.keys())[-1]
-            print('\t'*2,' ...last key:value',lastkey, ALL[lastkey])
+            print('\t'*2,' ...last key:value',lastkey, ' : ', ALL[lastkey])
             
             del local
             del intersecn
