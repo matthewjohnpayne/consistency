@@ -15,7 +15,7 @@ import sys, os
 import flat_file_duplicates as ffd
  
 # monitor for duplicates across flat_files ...
-ffd.CrossDesignationDuplicates.find() 
+CDD = ffd.CrossDesignationDuplicates(); CDD.find()
 
 
 
