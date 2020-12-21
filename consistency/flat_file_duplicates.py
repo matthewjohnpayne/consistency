@@ -202,7 +202,7 @@ class CrossDesignationDuplicates():
 
             # do a sanity print-out of the last input obs80bit
             lastkey = list(local.keys())[-1]
-            print(f'\t\t lastkey={lastkey}, ALL[lastkey]={ALL[lastkey]})
+            print(f'\t\t lastkey={lastkey}, ALL[lastkey]={ALL[lastkey]}')
             
             del local
             del intersecn
