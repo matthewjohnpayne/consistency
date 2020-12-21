@@ -252,6 +252,6 @@ class CrossDesignationDuplicates():
         sys.exit()
     """
 
-    def find(self, identifier ):
+    def fix(self, identifier ):
         ''' Fix any duplicates that were previously found in the *find* routine (above)'''
         pass

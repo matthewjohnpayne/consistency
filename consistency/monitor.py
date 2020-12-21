@@ -9,7 +9,12 @@ I'll probably define the functions elsewhere and import them into here.
 
 '''
 
+# imports 
 import sys, os 
+import flat_file_duplicates as ffd
+ 
+# monitor for duplicates across flat_files ...
+ffd.CrossDesignationDuplicates.find() 
 
 
 
