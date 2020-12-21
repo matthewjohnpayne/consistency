@@ -184,7 +184,6 @@ class CrossDesignationDuplicates():
                 
             # intersecn indicates duplicate obs80-bits
             intersecn = local.keys() & ALL.keys()
-            print(f'intersecn={intersecn}')
             
             # store duplicates with list of file-integers
             for k in intersecn:
@@ -208,7 +207,7 @@ class CrossDesignationDuplicates():
                 lastkey = list(local.keys())[-1]
                 print(f'\t\t lastkey={lastkey}, ALL[lastkey]={ALL[lastkey]}')
             else:
-                print('No data ...')
+                print('\t\t ***No data***')
             
             del local
             del intersecn
