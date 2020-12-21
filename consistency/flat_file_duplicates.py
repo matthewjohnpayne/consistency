@@ -199,7 +199,7 @@ class CrossDesignationDuplicates():
             # do a sanity print-out of the last input obs80bit
             lastkey = list(local.keys())[-1]
             print('\t'*2,' ...last key:value',lastkey, ALL[lastkey])
-                local     = {line[15:56]:n for line in fh if line[14] not in ['s','v']}
+            local     = {line[15:56]:n for line in fh if line[14] not in ['s','v']}
             
             del local
             del intersecn
