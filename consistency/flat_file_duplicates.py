@@ -93,11 +93,14 @@ class CrossDesignationDuplicates():
         In this *find* function I give the option of calling two different methods ...
         '''
         
+        # Get the files that need to be searched through
+        file_dict = self._get_filenames()
+        
         # ------- SEARCH FOR DUPLICATES -----------
         
         # (1) In this approach we read all files into memory at once
         if METHOD == 'ALL':
-            duplicate_dict = self._read_all()
+            duplicate_dict = self._read_all(file_dict)
         
         # (2) Alternatively, try to split the files up so that I don't have to read them all at once
         # - Nothing working yet
