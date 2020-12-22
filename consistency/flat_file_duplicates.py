@@ -214,10 +214,11 @@ class CrossDesignationDuplicates():
             
             # Because I am impatient, I will print out the entire dict any time there is content ...
             if DUP:
-                self.save(duplicate_dict)
+                self.save(DUP)
             
         del ALL
-        return duplicate_dict
+        return DUP
+        
     """
     def _read_split(self, file_dict):
         '''
