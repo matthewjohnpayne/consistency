@@ -20,5 +20,8 @@ SFD = ffd.SingleFileDuplication(); SFD.find()
 # monitor for duplicates across flat_files ...
 #CDD = ffd.CrossDesignationDuplicates(); CDD.find()
 
+# monitor for many other problems beyond duplicates
+# - This code monitors on a designation-by-designation basis
+#
 
 

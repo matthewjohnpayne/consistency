@@ -2,12 +2,16 @@
 '''
 MJP 2020-12-13
 Some code to contribute towards establishing observational consistency
-Intend to use this code purely for finding duplicates in flat-files
+
+Intend to use this code purely for finding *DUPLICATES* in flat-files
 This will have to involve 2 types of duplicate
 (i) duplicates within files
- - Not yet implemented within this file
+ - See "SingleFileDuplication" class
 (ii) duplicates across files
  - See "CrossDesignationDuplicates" class
+ 
+Many other problems beyond duplicates are dealt with elsewhere:
+ - See file "" 
 
 '''
 
