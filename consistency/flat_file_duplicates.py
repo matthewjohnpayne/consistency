@@ -66,7 +66,8 @@ class Files():
     def __init__(self,):
         # We want to 'permanently' save some output files ...
         self.save_dir = newsub.generate_subdirectory( 'obs_cons' )
-        
+        # It may be useful to save this mapping of files-to-numbers ...
+        self.map_file = filepath=os.path.join(self.save_dir , 'mapping.txt')
 
     def _get_filenames(self,):
         ''' get a dict containing all the filenames we want to work with ...'''
@@ -176,7 +177,6 @@ class CrossDesignationDuplicates(Files):
 
     def __init__(self, ):
         super().__init__()
-        self.map_file = filepath=os.path.join(self.save_dir , 'cross_des_mapping.txt')
         self.dup_file = filepath=os.path.join(self.save_dir , 'cross_des_duplicates.txt')
         print(f'CrossDesignationDuplicates saving into {self.dup_file}')
 
