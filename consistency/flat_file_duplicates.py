@@ -96,7 +96,8 @@ class CrossDesignationDuplicates():
         
         # Get the files that need to be searched through
         self.file_dict = self._get_filenames()
-        
+        self.num       = { n:True if n in num else False for n,f in self.file_dict.items()}
+
         # ------- SEARCH FOR DUPLICATES -----------
         
         # (1) In this approach we read all files into memory at once
@@ -129,7 +130,7 @@ class CrossDesignationDuplicates():
         with open( self.dup_file, 'w') as fh:
             for obs80bit, lst in duplicate_dict.items():
                 for i,n in enumerate(lst):
-                    fh.write(f'{obs80bit},{i},{self.file_dict[n]},{num[n]}\n')
+                    fh.write(f'{obs80bit},{i},{self.file_dict[n]},{self.num[n]}\n')
         print('\t'*3,'created/updated:', self.dup_file)
 
 
