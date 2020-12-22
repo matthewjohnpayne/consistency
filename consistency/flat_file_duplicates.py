@@ -101,7 +101,7 @@ class CrossDesignationDuplicates():
         
         # (1) In this approach we read all files into memory at once
         if METHOD == 'ALL':
-            duplicate_dict = self._read_all(file_dict)
+            duplicate_dict = self._read_all(self.file_dict)
         
         # (2) Alternatively, try to split the files up so that I don't have to read them all at once
         # - Nothing working yet
