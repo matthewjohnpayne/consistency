@@ -127,7 +127,7 @@ class CrossDesignationDuplicates():
     def save(self, duplicate_dict):
         ''' save any duplicates to file '''
         with open( self.dup_file, 'w') as fh:
-            for obs80bit, lst in DUP.items():
+            for obs80bit, lst in duplicate_dict.items():
                 for i,n in enumerate(lst):
                     fh.write(f'{obs80bit},{i},{file_dict[n]},{num[n]}\n')
         print('\t'*3,'created/updated:', self.dup_file)
