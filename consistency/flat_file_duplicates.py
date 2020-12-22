@@ -153,15 +153,14 @@ class SingleFileDuplication(Files):
         with open( self.dup_file, 'w') as fh:
             for filename, d in duplicate_dict.items():
                 for obs80bit, lst in d.items():
-                    for i,n in enumerate(lst):
-                        fh.write(f'{filename} {obs80bit},{i}\n')
+                    fh.write(f'{filename} {obs80bit}\n')
         print('\t'*3,'created/updated:', self.dup_file)
 
     def fix(self,):
         '''
         Fix any duplicates within a file
         '''
-        
+        pass
 
   
 class CrossDesignationDuplicates(Files):
