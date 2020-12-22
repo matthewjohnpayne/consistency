@@ -96,7 +96,7 @@ class CrossDesignationDuplicates():
         
         # Get the files that need to be searched through
         self.file_dict = self._get_filenames()
-        self.num       = { n:True if n in num else False for n,f in self.file_dict.items()}
+        self.num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
 
         # ------- SEARCH FOR DUPLICATES -----------
         
