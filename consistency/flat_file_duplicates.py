@@ -70,7 +70,7 @@ class Files():
 
     def _get_filenames(self,):
         ''' get a dict containing all the filenames we want to work with ...'''
-        filenames_to_ignore['unpub.num']
+        filenames_to_ignore = ['unpub.num']
 
         # ------------ NUMBERED FILES ------------------
         # Primary, published files
