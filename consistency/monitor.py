@@ -14,8 +14,11 @@ I'll probably define the functions elsewhere and import them into here.
 import sys, os 
 import flat_file_duplicates as ffd
  
+# monitor for duplicates within each flat_file ...
+SFD = ffd.SingleFileDuplication(); SFD.find()
+
 # monitor for duplicates across flat_files ...
-CDD = ffd.CrossDesignationDuplicates(); CDD.find()
+#CDD = ffd.CrossDesignationDuplicates(); CDD.find()
 
 
 

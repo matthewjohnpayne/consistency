@@ -20,15 +20,14 @@ import psycopg2
 import difflib
 import numpy as np
 from astropy.time import Time
-from collections import defaultdict
-import textwrap 
+import textwrap
 import healpy as hp
 import glob
 import re
 import shutil
 import random
 import copy
-from collections import Mapping, Container
+from collections import Mapping, Container, Counter, defaultdict
 from sys import getsizeof
 
 
@@ -61,8 +60,108 @@ import obs80 as o80
 # ------------------------------------------------------------------------
 # CROSS DESIGNATION DUPLICATES...
 # ------------------------------------------------------------------------
+
+class Files():
+
+    def __init__(self,):
+        # We want to 'permanently' save some output files ...
+        self.save_dir = newsub.generate_subdirectory( 'obs_cons' )
+        
+
+    def _get_filenames(self,):
+        ''' get a dict containing all the filenames we want to work with ...'''
+        filenames_to_ignore['unpub.num']
+
+        # ------------ NUMBERED FILES ------------------
+        # Primary, published files
+        files_ = [_ for _ in glob.glob(f'/sa/mpn/N*dat', recursive=True) if _ not in filenames_to_ignore]
+        
+        # In-progress ( between monthly pubs) files are in different location ...
+        # E.g. "tot.num", "pending.num", ..., ...
+        files_.extend( [_ for _ in glob.glob(f'/sa/obs/*num', recursive=True) if _ not in filenames_to_ignore] )
+        
+        
+        # ---------------- UN-numbered FILES -----------
+        files_.extend( [_ for _ in glob.glob(f'/sa/mpu/*dat', recursive=True) if _ not in filenames_to_ignore] )
+        
+        # *** WHY IS THERE NO "/sa/obs/*unn"??? ***
+        #files_.extend( [_ for _ in glob.glob(f'/sa/obs/*unn', recursive=True) if _ not in filenames_to_ignore] )
+
+
+        # ---------------- File-Mapping -----------
+        file_dict = { n:f for n,f in enumerate(files_)}
+        num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
+        with open( self.map_file,'w') as fh:
+            for n,f in file_dict.items():
+                fh.write(f'{n},{f},{num[n]}\n')
+        print('created...', self.map_file )
+        
+        return file_dict
+        
     
-class CrossDesignationDuplicates():
+class SingleFileDuplication(Files):
+    '''
+    Check for duplicates within a single ("primary") flat-file
+    '''
+    
+    def __init__(self, ):
+        super().__init__()
+        self.dup_file = filepath=os.path.join(self.save_dir , 'single_file_duplicates.txt')
+        print(f'SingleFileDuplication saving into {self.dup_file}')
+
+    def find(self,):
+        '''
+        Find any duplicates within a file
+        '''
+        
+        # Get the files that need to be searched through
+        self.file_dict = self._get_filenames()
+        
+        # dict used to store definite duplicates
+        dup = {}
+
+        # Loop through all of the files ...
+        for n,f in file_dict.items():
+            print(f'{n}/{len(file_dict)} : {f}')
+            
+            # Read the file contents into a "local" dictionary
+            dd  = defaultdict(list)
+            with open(f,'r') as fh:
+            
+                # local dict maps obs80-bit to integer representing file
+                # NB: ignoring second-line obs, because those are the same for many many detections in the same exposure
+                for nl,line in enumerate(fh):
+                    if line[14] not in ['s','v']:
+                        o80bit = line[15:56]
+                        
+                        # Store all obs80-bits
+                        dd[o80bit].append(nl)
+                        
+                        # Store definite duplicates bits
+                        if len(dd[o80bit]) > 1 :
+                            dup[f][o80bit] = dd[o80bit]
+                            
+        # If there are any duplicates, save to file ...
+        if dup:
+            self.save(dup)
+
+    def save(self, duplicate_dict):
+        ''' save any duplicates to file '''
+        with open( self.dup_file, 'w') as fh:
+            for filename, d in duplicate_dict.items():
+                for obs80bit, lst in d.items():
+                    for i,n in enumerate(lst):
+                        fh.write(f'{filename} {obs80bit},{i}\n')
+        print('\t'*3,'created/updated:', self.dup_file)
+
+    def fix(self,):
+        '''
+        Fix any duplicates within a file
+        '''
+        
+
+  
+class CrossDesignationDuplicates(Files):
     '''
     There's a possibility that the same observation has
     been published against multiple object-designations.
@@ -76,13 +175,10 @@ class CrossDesignationDuplicates():
     '''
 
     def __init__(self, ):
-    
-        # We want to 'permanently' save some output files ...
-        save_dir = newsub.generate_subdirectory( 'obs_cons' )
-        print(f'CrossDesignationDuplicates saving into {save_dir}')
-        
-        self.map_file = filepath=os.path.join(save_dir , 'mapping.txt')
-        self.dup_file = filepath=os.path.join(save_dir , 'duplicates.txt')
+        super().__init__()
+        self.map_file = filepath=os.path.join(self.save_dir , 'cross_des_mapping.txt')
+        self.dup_file = filepath=os.path.join(self.save_dir , 'cross_des_duplicates.txt')
+        print(f'CrossDesignationDuplicates saving into {self.dup_file}')
 
 
     def find(self, METHOD='ALL'):
@@ -135,35 +231,7 @@ class CrossDesignationDuplicates():
 
 
         
-    def _get_filenames(self, ):
-        ''' get a dict containing all the filenames we want to work with ...'''
 
-        # ------------ NUMBERED FILES ------------------
-        # Primary, published files
-        files_ = glob.glob(f'/sa/mpn/N*dat', recursive=True)
-        
-        # In-progress ( between monthly pubs) files are in different location ...
-        # E.g. "tot.num", "pending.num", ..., ...
-        files_.extend( glob.glob(f'/sa/obs/*num', recursive=True) )
-        
-        
-        # ---------------- UN-numbered FILES -----------
-        files_.extend(glob.glob(f'/sa/mpu/*dat', recursive=True))
-        
-        # *** WHY IS THERE NO "/sa/obs/*unn"??? ***
-        #files_.extend( glob.glob(f'/sa/obs/*unn', recursive=True) )
-
-
-        # ---------------- File-Mapping -----------
-        file_dict = { n:f for n,f in enumerate(files_)}
-        num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
-        with open( self.map_file,'w') as fh:
-            for n,f in file_dict.items():
-                fh.write(f'{n},{f},{num[n]}\n')
-        print('created...', self.map_file )
-        
-        return file_dict
-    
 
     def _read_all(self, file_dict):
         '''---------------- Big data read ----------
@@ -268,3 +336,11 @@ class CrossDesignationDuplicates():
     def fix(self, identifier ):
         ''' Fix any duplicates that were previously found in the *find* routine (above)'''
         pass
+        
+        # Find the most recent save file
+        
+        # Print how old it is
+        
+        # Not sure how to implment any kind of general fix?
+        # - If they are redesignations, take the later / one with the redesignated syntax
+        # - But more generally,m I am not sure ...
