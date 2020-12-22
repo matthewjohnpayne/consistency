@@ -122,7 +122,7 @@ class SingleFileDuplication(Files):
         dup = {}
 
         # Loop through all of the files ...
-        for n,f in file_dict.items():
+        for n,f in self.file_dict.items():
             print(f'{n}/{len(file_dict)} : {f}')
             
             # Read the file contents into a "local" dictionary
