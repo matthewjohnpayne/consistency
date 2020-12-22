@@ -140,6 +140,8 @@ class SingleFileDuplication(Files):
                         
                         # Store definite duplicates bits
                         if len(dd[o80bit]) > 1 :
+                            if f not in dup:
+                                dup[f]={}
                             dup[f][o80bit] = dd[o80bit]
                             
         # If there are any duplicates, save to file ...
