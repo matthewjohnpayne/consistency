@@ -13,7 +13,7 @@ I'll probably define the functions elsewhere and import them into here.
 # imports 
 import sys, os 
 import flat_file_duplicates as ffd
-import flat_file_nondup_progblems as ndp
+import flat_file_nondup_problems as ndp
 
 # monitor for duplicates within each flat_file ...
 #SFD = ffd.SingleFileDuplication() ; SFD.find()
