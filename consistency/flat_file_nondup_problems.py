@@ -140,7 +140,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
     # lower-level functions (*FINDING* problems)...
     # ------------------------------------------------------------------------
 
-    def _monitor_flat_files_for_single_desig( desig, proc_dir, DEBUG = True ):
+    def _monitor_flat_files_for_single_desig(self, desig, proc_dir, DEBUG = True ):
         '''
         '''
         print(f'Inside *_monitor_flat_files_for_single_desig*: desig={desig}')
