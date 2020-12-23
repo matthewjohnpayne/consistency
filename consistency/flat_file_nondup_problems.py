@@ -96,11 +96,12 @@ class FlatFileNonDuplicateProblems(ffd.Files):
         Find any flat-file problems (but not duplicates: that's done elsewhere)
         '''
         problem_dict = {}
+        proc_dir = self.sub_dir
         
         # Monitor numbered designations
         numbered_designations = range(1,10)
         for desig in numbered_designations:
-            desig_problem_dict = self._monitor_flat_files_for_single_desig(desig)
+            desig_problem_dict = self._monitor_flat_files_for_single_desig(desig, proc_dir)
             if desig_problem_dict:
                 problem_dict[desig] = desig_problem_dict
         
@@ -108,7 +109,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
         # *** NOT YET IMPLMENTED ***
         """
         for desig in unnumbered_designations:
-            desig_problem_dict = self._monitor_flat_files_for_single_desig(desig)
+            desig_problem_dict = self._monitor_flat_files_for_single_desig(desig, proc_dir)
             if desig_problem_dict:
                 problem_dict[desig] = desig_problem_dict        """
                 
@@ -139,7 +140,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
     # lower-level functions (*FINDING* problems)...
     # ------------------------------------------------------------------------
 
-    def _monitor_flat_files_for_single_desig( desig, DEBUG = True ):
+    def _monitor_flat_files_for_single_desig( desig, proc_dir, DEBUG = True ):
         '''
         '''
         print(f'Inside *_monitor_flat_files_for_single_desig*: desig={desig}')
@@ -147,7 +148,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
         # Get obs from flat files for single designation
         # - This is using the "findn" method
         # - returns a list of obs
-        obs_list = self.get_obs_from_ff(desig, self.sub_dir, DEBUG=DEBUG)
+        obs_list = self.get_obs_from_ff(desig, proc_dir, DEBUG=DEBUG)
 
         
         # (a) Look for 2-line obs
