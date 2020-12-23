@@ -76,7 +76,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
         # establish a database connection (needed for submissionIDs)
         self.cnx = self._generate_db_cnnection(cnx)
         
-    def _generate_db_cnnection(cnx):
+    def _generate_db_cnnection(self, cnx):
         ''' If we did not get a connection passed in, establish one
             This is particularly important for ray-parallelization
             
