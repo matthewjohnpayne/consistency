@@ -70,29 +70,18 @@ class Files():
     def __init__(self,):
         # We want to 'permanently' save some output files ...
         self.save_dir = newsub.generate_subdirectory( 'obs_cons' )
+        
         # It may be useful to save this mapping of files-to-numbers ...
         self.map_file = filepath=os.path.join(self.save_dir , 'mapping.txt')
+        
 
     def _get_filenames(self,):
         ''' get a dict containing all the filenames we want to work with ...'''
-        filenames_to_ignore = ['unpub.num']
-
-        # ------------ NUMBERED FILES ------------------
-        # Primary, published files
-        files_ = [_ for _ in glob.glob(f'/sa/mpn/N*dat', recursive=True) if _ not in filenames_to_ignore]
         
-        # In-progress ( between monthly pubs) files are in different location ...
-        # E.g. "tot.num", "pending.num", ..., ...
-        files_.extend( [_ for _ in glob.glob(f'/sa/obs/*num', recursive=True) if _ not in filenames_to_ignore] )
+        # Get filenames for num & unnum observations
+        files_ = self._get_numbered_filenames()
+        files_.extend(self._get_unnumbered_filenames())
         
-        
-        # ---------------- UN-numbered FILES -----------
-        files_.extend( [_ for _ in glob.glob(f'/sa/mpu/*dat', recursive=True) if _ not in filenames_to_ignore] )
-        
-        # *** WHY IS THERE NO "/sa/obs/*unn"??? ***
-        #files_.extend( [_ for _ in glob.glob(f'/sa/obs/*unn', recursive=True) if _ not in filenames_to_ignore] )
-
-
         # ---------------- File-Mapping -----------
         file_dict = { n:f for n,f in enumerate(files_)}
         num       = { n:True for n,f in file_dict.items() } # Later on might want unnum files as well
@@ -103,6 +92,33 @@ class Files():
         
         return file_dict
         
+    def _get_numbered_filenames(self, ):
+        ''' get filenames for numbered observations (primary data files)'''
+    
+        filenames_to_ignore = ['unpub.num']
+
+        # ------------ NUMBERED FILES ------------------
+        # Primary, published files
+        files_ = [_ for _ in glob.glob(f'/sa/mpn/N*dat', recursive=True) if _ not in filenames_to_ignore]
+        
+        # In-progress ( between monthly pubs) files are in different location ...
+        # E.g. "tot.num", "pending.num", ..., ...
+        files_.extend( [_ for _ in glob.glob(f'/sa/obs/*num', recursive=True) if _ not in filenames_to_ignore] )
+        
+        return files_
+        
+    def _get_unnumbered_filenames(self, ):
+        ''' get filenames for unnumbered observations (primary data files)'''
+    
+        filenames_to_ignore = []
+
+        # ---------------- UN-numbered FILES -----------
+        files_.extend( [_ for _ in glob.glob(f'/sa/mpu/*dat', recursive=True) if _ not in filenames_to_ignore] )
+        
+        files_.extend( [_ for _ in glob.glob(f'/sa/obs/*unn', recursive=True) if _ not in filenames_to_ignore] )
+
+        return files_
+
     
 class SingleFileDuplication(Files):
     '''
@@ -111,7 +127,7 @@ class SingleFileDuplication(Files):
     
     def __init__(self, ):
         super().__init__()
-        self.dup_file = filepath=os.path.join(self.save_dir , 'single_file_duplicates.txt')
+        self.dup_file = os.path.join(self.save_dir , 'single_file_duplicates.txt')
         print(f'SingleFileDuplication saving into {self.dup_file}')
 
     def find(self,):
