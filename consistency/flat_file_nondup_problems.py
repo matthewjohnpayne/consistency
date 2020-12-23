@@ -99,7 +99,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
         proc_dir = self.sub_dir
         
         # Monitor numbered designations
-        numbered_designations = range(1,10)
+        numbered_designations = [mc.unpacked_to_packed_desig(f'({x})') for x in range( 1,10 )]
         for desig in numbered_designations:
             desig_problem_dict = self._monitor_flat_files_for_single_desig(desig, proc_dir)
             if desig_problem_dict:
