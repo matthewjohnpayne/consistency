@@ -16,16 +16,13 @@ import flat_file_duplicates as ffd
 import flat_file_nondup_progblems as ndp
 
 # monitor for duplicates within each flat_file ...
-SFD = ffd.SingleFileDuplication()
-SFD.find()
+#SFD = ffd.SingleFileDuplication() ; SFD.find()
 
 # monitor for duplicates across flat_files ...
-CDD = ffd.CrossDesignationDuplicates()
-CDD.find()
+# CDD = ffd.CrossDesignationDuplicates() ; CDD.find()
 
 # monitor for many other problems beyond duplicates
 # - This code monitors on a designation-by-designation basis
-NDP = ndp.FlatFileNonDuplicateProblems()
-NDP.find()
+NDP = ndp.FlatFileNonDuplicateProblems() ; NDP.find()
 
 
