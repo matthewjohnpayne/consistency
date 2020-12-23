@@ -182,7 +182,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
     # ------------------------------------------------------------------------
     # FUNCTIONS RELATED TO READING FROM FLAT-FILES
     # ------------------------------------------------------------------------
-    def get_obs_from_ff(desig, proc_dir, DEBUG=False):
+    def get_obs_from_ff(self, desig, proc_dir, DEBUG=False):
         '''
         # Get obs from flat files
         # - Do we need to search using findn & findu on multiple "identifications" ?
@@ -223,7 +223,7 @@ class FlatFileNonDuplicateProblems(ffd.Files):
 
 
     
-    def combine_two_line_obs(deduped_obs_list):
+    def combine_two_line_obs(self, deduped_obs_list):
         '''
         # Find and combine 2-line obs ...
         # ... make dict key-ed on obs80 bit
